@@ -10,10 +10,11 @@ const URLS = {
 }; // object
 
 export default (request: VercelRequest, response: VercelResponse) => {
-    response.status(200).json(
-      {
-        name: request.query,
-        url: URLS[request.query.toString()]
-      }
-    );
+  const name = request.query.name.toString();
+  response.status(200).json(
+    {
+      name: name,
+      url: URLS[name]
+    }
+  );
 };
