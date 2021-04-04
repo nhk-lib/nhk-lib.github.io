@@ -11,9 +11,9 @@ const URLS = {
 
 export default (request: VercelRequest, response: VercelResponse) => {
     response.status(200).json(
-      JSON.stringify({
+      {
         name: request.query,
         url: URLS[request.query.toString()]
-      })
+      }
     );
 };
