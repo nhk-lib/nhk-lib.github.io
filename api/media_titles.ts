@@ -130,12 +130,11 @@ class ShoutCast {
 
 } // class
 
-function get_cache_seconds(y : number) {
+function get_cache_seconds(i_min : number) {
   const d = new Date();
   const s = d.getSeconds();
-  const m = (new Date()).getMinutes();
-  const next_m = (m - (m % y)) + y;
-  const seconds = ((next_m - m) * 60) - s - 1;
+  const m = d.getMinutes();
+  const seconds = ((i_min - (m % i_min)) * 60) - s - 1;
   if (seconds < 0) {
     return 1;
   }
