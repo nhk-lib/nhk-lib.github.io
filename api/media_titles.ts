@@ -40,18 +40,14 @@ class NHK_WORLD {
     return json.channel.item.map((x : NHK_WORLD_JSON_ITEM) => NHK_WORLD.item_to_json(x));
   } // method
 
-  static parse_timestamp( x : string ) {
-    return (parseInt(x) / 1000) | 0;
-  }
-
   static item_to_json(x : NHK_WORLD_JSON_ITEM) {
     return {
       airingId:     x.airingId,
       title:        string_join([x.title, x.subtitle], ":"),
       description:  string_join([x.description, x.content_clean], "\n"),
       link:         (x.link) ? `${NHK_WORLD.HOST}${x.link}` : null,
-      published_at: NHK_WORLD.parse_timestamp(x.pubDate),
-      ends_at:      NHK_WORLD.parse_timestamp(x.endDate),
+      published_at: parseInt(x.pubDate),
+      ends_at:      parseInt(x.endDate),
     }; // return
   }
 } // class
@@ -140,7 +136,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
   const nhk_json = results[1];
 
   response.status(200).json({
-    "updated_at": (Date.now() / 1000 | 0),
+    "updated_at": (((Date.now() / 1000) | 0) * 1000),
     nhk: nhk_json,
     shoutcast: shoutcast
   });
