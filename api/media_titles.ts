@@ -143,13 +143,13 @@ export default async (request: VercelRequest, response: VercelResponse) => {
   const shoutcast = results[0];
   const nhk_json = results[1];
 
-  response
-  .status(200)
+  response.setHeader("Cache-Control", `s-maxage=${get_cache_seconds(5)}`);
+
+  response.status(200)
   .json({
     "updated_at": (((Date.now() / 1000) | 0) * 1000),
     nhk: nhk_json,
     shoutcast: shoutcast
-  })
-  .setHeader("Cache-Control", `s-maxage=${get_cache_seconds(5)}`);
+  });
 
 }; // export
