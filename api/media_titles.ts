@@ -130,15 +130,26 @@ class ShoutCast {
 
 } // class
 
+function get_cache_seconds(y : number) {
+  const d = new Date();
+  const s = d.getSeconds();
+  const m = (new Date()).getMinutes();
+  const next_m = (m - (m % y)) + y;
+  return ((next_m - m) * 60) - s;
+}
+
 export default async (request: VercelRequest, response: VercelResponse) => {
   const results = await Promise.all([ShoutCast.info(), NHK_WORLD.json()]);
   const shoutcast = results[0];
   const nhk_json = results[1];
 
-  response.status(200).json({
+  response
+  .status(200)
+  .json({
     "updated_at": (((Date.now() / 1000) | 0) * 1000),
     nhk: nhk_json,
     shoutcast: shoutcast
-  });
+  })
+  .setHeader("Cache-Control", `s-maxage=${get_cache_seconds(5)}`);
 
 }; // export
