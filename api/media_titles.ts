@@ -2,61 +2,6 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import fetch from "cross-fetch";
 
-interface NHK_WORLD_JSON_ITEM {
-  seriesId:      string,
-  airingId:      string,
-  title:         string,
-  description:   string,
-  link?:          string,
-  pubDate:       string,
-  jstrm:         string,
-  wstrm:         string,
-  vodReserved:   boolean,
-  endDate:       string,
-  subtitle:      string,
-  content:       string,
-  content_clean: string,
-  pgm_gr_id:     string,
-  thumbnail:     string,
-  thumbnail_s:   string,
-  showlist:      string,
-  internal:      string,
-  genre:         object,
-  vod_id:        string,
-  vod_url:       string,
-  analytics:     string
-} // interface
-
-class NHK_WORLD {
-  static JSON = "http://api.nhk.or.jp/nhkworld/epg/v7a/world/now.json?apikey=EJfK8jdS57GqlupFgAfAAwr573q01y6k"
-
-  static HOST = "https://www3.nhk.or.jp"
-  static async json() {
-    const resp = await fetch(NHK_WORLD.JSON, {headers: ShoutCast.HEADERS});
-    if (resp.status !== 200) {
-      return [];
-    }
-    const json = await resp.json();
-    return json.channel.item.map((x : NHK_WORLD_JSON_ITEM) => NHK_WORLD.item_to_json(x));
-  } // method
-
-  static item_to_json(x : NHK_WORLD_JSON_ITEM) {
-    return {
-      airingId:     x.airingId,
-      title:        string_join([x.title, x.subtitle], ":"),
-      description:  string_join([x.description, x.content_clean], "\n"),
-      link:         (x.link) ? `${NHK_WORLD.HOST}${x.link}` : null,
-      published_at: parseInt(x.pubDate),
-      ends_at:      parseInt(x.endDate),
-    }; // return
-  }
-} // class
-
-function string_join(x : string[], j : string) {
-  return x.filter(x => { return x.length > 0; }).join(j).trim();
-} // function
-
-
 interface Shoutcast_Station {
   "Current Song"?: string,
   "Stream Title"?: string,
@@ -141,8 +86,15 @@ function get_cache_seconds(i_min : number) {
   return seconds;
 }
 
+function get_nhk_world() {
+   return fetch(
+     "https://da0099.vercel.app/api/nhk_world",
+     {headers: ShoutCast.HEADERS}
+   ).then(x => x.json());
+} // function
+
 export default async (request: VercelRequest, response: VercelResponse) => {
-  const results = await Promise.all([ShoutCast.info(), NHK_WORLD.json()]);
+  const results = await Promise.all([ShoutCast.info(), get_nhk_world()]);
   const shoutcast = results[0];
   const nhk_json = results[1];
 
@@ -151,8 +103,8 @@ export default async (request: VercelRequest, response: VercelResponse) => {
   response.status(200)
   .json({
     "updated_at": (((Date.now() / 1000) | 0) * 1000),
+    shoutcast: shoutcast,
     nhk: nhk_json,
-    shoutcast: shoutcast
   });
 
 }; // export
