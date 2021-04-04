@@ -9,12 +9,12 @@
   },
   "devDependencies": {
     "@vercel/node": "*",
-    "vercel": "^21.3.3"
+    "vercel": "*"
   },
   "scripts": {},
   "author": "da99",
   "license": "MIT",
   "jshintConfig": {
-    "esversion": 9
+    "esversion": 8
   }
 }

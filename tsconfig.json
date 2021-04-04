@@ -1,4 +1,19 @@
 
 {
-  "exclude": ["dist/Public/www_modules/", "node_modules/", "spec/"]
+  "compilerOptions": {
+    "target": "ES2015",
+    "module": "ES2020",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "sourceMap": false,
+    "strict": true,
+    "outDir": "build",
+    "lib": ["ES2015"],
+    "types": ["@types/node"],
+    "moduleResolution": "node",
+    "rootDir": "./api",
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["api/"],
+  "exclude": ["node_modules/", ".vercel/"]
 }
