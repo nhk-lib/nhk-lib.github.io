@@ -135,7 +135,11 @@ function get_cache_seconds(y : number) {
   const s = d.getSeconds();
   const m = (new Date()).getMinutes();
   const next_m = (m - (m % y)) + y;
-  return ((next_m - m) * 60) - s;
+  const seconds = ((next_m - m) * 60) - s - 1;
+  if (seconds < 0) {
+    return 1;
+  }
+  return seconds;
 }
 
 export default async (request: VercelRequest, response: VercelResponse) => {
