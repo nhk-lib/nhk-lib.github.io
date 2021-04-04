@@ -27,6 +27,15 @@ interface NHK_WORLD_JSON_ITEM {
   analytics:     string
 } // interface
 
+interface NHK_WORLD_SHOW {
+  airingId:     string;
+  title:        string;
+  description:  string;
+  link:         string | null;
+  published_at: number;
+  ends_at:      number;
+} // return
+
 class NHK_WORLD {
   static JSON = "http://api.nhk.or.jp/nhkworld/epg/v7a/world/now.json?apikey=EJfK8jdS57GqlupFgAfAAwr573q01y6k"
 
@@ -52,7 +61,7 @@ class NHK_WORLD {
     return json.channel.item.map((x : NHK_WORLD_JSON_ITEM) => NHK_WORLD.item_to_json(x));
   } // method
 
-  static item_to_json(x : NHK_WORLD_JSON_ITEM) {
+  static item_to_json(x : NHK_WORLD_JSON_ITEM) : NHK_WORLD_SHOW {
     return {
       airingId:     x.airingId,
       title:        NHK_WORLD.string_join([x.title, x.subtitle], ":"),
@@ -61,24 +70,25 @@ class NHK_WORLD {
       published_at: parseInt(x.pubDate),
       ends_at:      parseInt(x.endDate),
     }; // return
-  }
+  } // static
+
+  static cache_seconds(shows : NHK_WORLD_SHOW[]) {
+    const now = Date.now();
+    const next_show = shows.find(x => x.ends_at > now);
+    if (next_show) {
+      return Math.ceil((next_show.ends_at - now) / 1000)  + 1;
+    }
+    return 3;
+  } // static
+
 } // class
 
-function get_cache_seconds(i_min : number) {
-  const d = new Date();
-  const s = d.getSeconds();
-  const m = d.getMinutes();
-  const seconds = ((i_min - (m % i_min)) * 60) - s - 1;
-  if (seconds < 0) {
-    return 1;
-  }
-  return seconds;
-}
 
 export default async (request: VercelRequest, response: VercelResponse) => {
   const nhk_json = await NHK_WORLD.json();
-
-  response.setHeader("Cache-Control", `s-maxage=${get_cache_seconds(5)}`);
+  const cache_secs = NHK_WORLD.cache_seconds(nhk_json);
+  console.log(cache_secs, cache_secs / 60);
+  response.setHeader("Cache-Control", `s-maxage=${cache_secs}`);
 
   response.status(200).json(nhk_json);
 
