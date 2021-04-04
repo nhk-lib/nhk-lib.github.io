@@ -1,0 +1,4 @@
+
+{
+  "exclude": ["dist/Public/www_modules/", "node_modules/", "spec/"]
+}

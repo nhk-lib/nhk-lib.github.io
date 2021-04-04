@@ -1,0 +1,17 @@
+{
+  "private": true,
+  "name": "ip_to_domain",
+  "version": "0.0.0",
+  "description": "My first project with Vercel",
+  "main": "./dist/",
+  "dependencies": {},
+  "devDependencies": {
+    "@vercel/node": "*"
+  },
+  "scripts": {},
+  "author": "da99",
+  "license": "MIT",
+  "jshintConfig": {
+    "esversion": 9
+  }
+}
