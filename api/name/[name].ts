@@ -45,7 +45,7 @@ export default (request: VercelRequest, response: VercelResponse) => {
           name: name,
           url: URLS[name],
           error: "UNKNOWN",
-          status: err.status
+          status: err.toString()
         }
       );
     });
