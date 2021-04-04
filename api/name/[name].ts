@@ -25,10 +25,10 @@ export default (request: VercelRequest, response: VercelResponse) => {
   if (url) {
     fetch(url)
     .then( resp => {
-      if (resp.status === 200) {
+      /* if (resp.status === 200) { */
         return resp.text();
-      }
-      throw(resp);
+      /* } */
+      /* throw(resp); */
     })
     .then(function (txt) {
       response.status(200).json(
