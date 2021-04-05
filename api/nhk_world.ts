@@ -64,7 +64,7 @@ class NHK_WORLD {
   static item_to_json(x : NHK_WORLD_JSON_ITEM) : NHK_WORLD_SHOW {
     return {
       airingId:     x.airingId,
-      title:        NHK_WORLD.string_join([x.title, x.subtitle], ":"),
+      title:        NHK_WORLD.string_join([x.title, x.subtitle], ": "),
       description:  NHK_WORLD.string_join([x.description, x.content_clean], " "),
       link:         (x.link) ? `${NHK_WORLD.HOST}${x.link}` : null,
       published_at: parseInt(x.pubDate),
