@@ -99,6 +99,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
   const nhk_json = results[1];
 
   response.setHeader("Cache-Control", `s-maxage=${get_cache_seconds(5)}`);
+  response.setHeader("Access-Control-Allow-Origin", "*");
 
   response.status(200)
   .json({
