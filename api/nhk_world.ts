@@ -69,8 +69,8 @@ class NHK_WORLD {
       title:        NHK_WORLD.string_join([x.title, x.subtitle], ": "),
       description:  NHK_WORLD.string_join([x.description, x.content_clean], " "),
       link:         (x.link) ? `${NHK_WORLD.HOST}${x.link}` : null,
-      thumbnail:         (x.link) ? `${NHK_WORLD.HOST}${x.thumbnail}` : null,
-      thumbnail_small:   (x.link) ? `${NHK_WORLD.HOST}${x.thumbnail_s}` : null,
+      thumbnail:         (x.thumbnail) ? `${NHK_WORLD.HOST}${x.thumbnail}` : null,
+      thumbnail_small:   (x.thumbnail_s) ? `${NHK_WORLD.HOST}${x.thumbnail_s}` : null,
       published_at: parseInt(x.pubDate),
       ends_at:      parseInt(x.endDate),
     }; // return
