@@ -28,12 +28,14 @@ interface NHK_WORLD_JSON_ITEM {
 } // interface
 
 interface NHK_WORLD_SHOW {
-  airingId:     string;
-  title:        string;
-  description:  string;
-  link:         string | null;
-  published_at: number;
-  ends_at:      number;
+  airingId:        string;
+  title:           string;
+  description:     string;
+  link:            string | null;
+  thumbnail:       string | null;
+  thumbnail_small: string | null;
+  published_at:    number;
+  ends_at:         number;
 } // return
 
 class NHK_WORLD {
@@ -67,6 +69,8 @@ class NHK_WORLD {
       title:        NHK_WORLD.string_join([x.title, x.subtitle], ": "),
       description:  NHK_WORLD.string_join([x.description, x.content_clean], " "),
       link:         (x.link) ? `${NHK_WORLD.HOST}${x.link}` : null,
+      thumbnail:         (x.link) ? `${NHK_WORLD.HOST}${x.thumbnail}` : null,
+      thumbnail_small:   (x.link) ? `${NHK_WORLD.HOST}${x.thumbnail_s}` : null,
       published_at: parseInt(x.pubDate),
       ends_at:      parseInt(x.endDate),
     }; // return
@@ -87,7 +91,6 @@ class NHK_WORLD {
 export default async (request: VercelRequest, response: VercelResponse) => {
   const nhk_json = await NHK_WORLD.json();
   const cache_secs = NHK_WORLD.cache_seconds(nhk_json);
-  console.log(cache_secs, cache_secs / 60);
   response.setHeader("Cache-Control", `s-maxage=${cache_secs}`);
 
   response.status(200).json(nhk_json);
