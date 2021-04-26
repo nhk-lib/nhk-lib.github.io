@@ -94,9 +94,8 @@ function get_nhk_world() {
 } // function
 
 export default async (request: VercelRequest, response: VercelResponse) => {
-  const results = await Promise.all([ShoutCast.info(), get_nhk_world()]);
+  const results = await Promise.all([ShoutCast.info()]);
   const shoutcast = results[0];
-  const nhk_json = results[1];
 
   response.setHeader("Cache-Control", `s-maxage=${get_cache_seconds(5)}`);
   response.setHeader("Access-Control-Allow-Origin", "*");
@@ -104,8 +103,7 @@ export default async (request: VercelRequest, response: VercelResponse) => {
   response.status(200)
   .json({
     "updated_at": (((Date.now() / 1000) | 0) * 1000),
-    shoutcast: shoutcast,
-    nhk: nhk_json,
+    shoutcast: shoutcast
   });
 
 }; // export
