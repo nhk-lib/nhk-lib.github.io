@@ -85,7 +85,8 @@ const resp_o = {
   status: 200,
   headers: {
     "content-type": "application/json; charset=utf-8",
-    "Access-Control-Allow-Origin" : "*"
+    "Access-Control-Allow-Origin" : "*",
+    "Cloudflare-CDN-Cache-Control": "max-age=90"
   }
 };
 
