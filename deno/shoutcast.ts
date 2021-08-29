@@ -86,7 +86,7 @@ const resp_o = {
   headers: {
     "content-type": "application/json; charset=utf-8",
     "Access-Control-Allow-Origin" : "*",
-    "X-version": "hello2",
+    "X-version": "hello3",
     "Cache-Control": "public, max-age=90, s-maxage=90",
     "Cloudflare-CDN-Cache-Control": "max-age=90"
   }
@@ -102,7 +102,7 @@ function get_all(event : any) {
   });
 
   Promise.all(fetches).then((bodies) => {
-    const response = new Response(JSON.stringify(bodies), resp_o);
+    const response = new Response(JSON.stringify({time: (new Date).toString(), channels: bodies}), resp_o);
     event.respondWith(response);
   });
 } // function
