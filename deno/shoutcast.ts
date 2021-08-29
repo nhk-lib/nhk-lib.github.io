@@ -86,9 +86,9 @@ const resp_o = {
   headers: {
     "content-type": "application/json; charset=utf-8",
     "Access-Control-Allow-Origin" : "*",
-    "Cloudflare-CDN-Cache-Control": "max-age=90",
-    "Cache-Control": "max-age=90",
-    "CDN-Cache-Control": "90"
+    "Cache-Control": "public, max-age=90, s-maxage=90",
+    "CDN-Cache-Control": "90",
+    "Cloudflare-CDN-Cache-Control": "public, max-age=90"
   }
 };
 
