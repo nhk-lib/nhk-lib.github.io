@@ -86,11 +86,11 @@ const resp_o = {
   headers: {
     "content-type": "application/json; charset=utf-8",
     "Access-Control-Allow-Origin" : "*",
-    "X-version": "hello1",
-    "Cloudflare-CDN-Cache-Control": "public, max-age=90"
+    "X-version": "hello2",
+    "Cache-Control": "public, max-age=90, s-maxage=90",
+    "Cloudflare-CDN-Cache-Control": "max-age=90"
   }
 };
-    /* "Cache-Control": "public, max-age=90, s-maxage=90", */
 
 
 function get_all(event : any) {
