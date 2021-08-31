@@ -7,6 +7,7 @@ interface Shoutcast_Station {
   "current_title"?: string
 } // interface
 
+var counter = 0;
 
 class ShoutCast {
   static URLS : any = {
@@ -88,7 +89,8 @@ const resp_o = {
     "Access-Control-Allow-Origin" : "*",
     "X-version": "hello4",
     "Cache-Control": "public, max-age=90",
-    "Cloudflare-CDN-Cache-Control": "max-age=90"
+    "Cloudflare-CDN-Cache-Control": "max-age=90",
+    "X-counter": (++counter).toString()
   }
 };
 
