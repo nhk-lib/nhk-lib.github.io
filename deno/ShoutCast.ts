@@ -7,10 +7,9 @@ interface Shoutcast_Station {
   "current_title"?: string
 } // interface
 
-var counter = 0;
 
-class ShoutCast {
-  static URLS : any = {
+export class ShoutCast {
+  static URLS = {
     channel_101:   "http://155.138.139.156:8101/",
     channel_101_b: "http://155.138.139.156:9101/",
     channel_99:    "http://155.138.139.156:8099/",
@@ -18,6 +17,16 @@ class ShoutCast {
     channel_99_b:  "http://155.138.139.156:8199/",
     jpopsuki:      "http://213.239.204.252:8000/"
   };
+
+  static request_options = {
+    method: "GET",
+    headers: {
+      "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+      "Accept-Language": "en-US,en;q=0.9,en-GB;q=0.8"
+    }
+  };
+
 
   static TITLE_PATTERN  = /Stream Title:\ +(.+)\n/;
   static CURRENT_TITLE  = /Current Song:\ +(.+?)\n\n/m;
@@ -70,46 +79,37 @@ class ShoutCast {
     return info;
   } // static
 
+
+  static get_all() {
+    const filenames = Object.keys(ShoutCast.URLS) as (keyof typeof ShoutCast.URLS)[];
+
+    const fetches = filenames.map((f) => {
+      const url : string = ShoutCast.URLS[f];
+      return fetch(url, ShoutCast.request_options)
+      .then((resp) => resp.text())
+      .then((txt) => ShoutCast.parse(f, url, txt));
+    });
+
+    return Promise.all(fetches);
+  } // static
+
+  static async response() {
+    const fetches = await ShoutCast.get_all();
+    return new Response(
+      JSON.stringify({time: (new Date).toString(), channels: fetches}),
+      {
+        status: 200,
+        headers: {
+          "content-type": "application/json; charset=utf-8",
+          "Access-Control-Allow-Origin" : "*",
+          "Cache-Control": "public, max-age=90"
+        }
+      }
+    );
+  } // static
+
 } // class
 
-const options = {
-  method: "GET",
-  headers: {
-    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-    "Accept-Language": "en-US,en;q=0.9,en-GB;q=0.8"
-  }
-};
 
-
-const resp_o = {
-  status: 200,
-  headers: {
-    "content-type": "application/json; charset=utf-8",
-    "Access-Control-Allow-Origin" : "*",
-    "X-version": "hello4",
-    "Cache-Control": "public, max-age=90",
-    "Cloudflare-CDN-Cache-Control": "max-age=90",
-    "X-counter": (++counter).toString()
-  }
-};
-
-
-function get_all(event : any) {
-  const fetches = Object.keys(ShoutCast.URLS).map((filename) => {
-    const url = ShoutCast.URLS[filename];
-    return fetch(url, options)
-    .then((resp) => resp.text())
-    .then((txt) => ShoutCast.parse(filename, url, txt));
-  });
-
-  Promise.all(fetches).then((bodies) => {
-    const response = new Response(JSON.stringify({time: (new Date).toString(), channels: bodies}), resp_o);
-    event.respondWith(response);
-  });
-} // function
-
-
-addEventListener("fetch", get_all); // addEventListener
 
 
