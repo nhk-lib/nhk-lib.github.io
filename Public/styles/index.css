@@ -1,0 +1,21 @@
+
+body {
+  background:  #f7f7f7;
+  font-family: Ubuntu, Segoe UI, Helvetica, sans-serif;
+  padding:     20px;
+  text-align: center;
+}
+
+p {
+  padding: 10px;
+  margin: 10px;
+}
+
+a:link, a:visited {
+  padding:  0 2px;
+}
+
+a:hover {
+  background: #E43000;
+  color:      #fff;
+}
