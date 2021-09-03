@@ -55,7 +55,7 @@ addEventListener("fetch", (event : FetchEvent) => {
   switch(pathname) {
 
     case "/":
-      event.respondWith( get_file(event, "/index.html"));
+      event.respondWith( new Response("not ready", {status: 200, headers: {"content-type": "text/plain"}}) );
       break;
 
     case "/info":
