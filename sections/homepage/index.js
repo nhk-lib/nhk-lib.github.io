@@ -293,21 +293,6 @@ const DA = {
             src
         });
     }
-    class Quarry {
-        static next_loop_ms() {
-            const min_target = 1;
-            const dt = new Date();
-            const now = dt.getTime();
-            const secs = (1 - dt.getMinutes() % 1) * 60 - dt.getSeconds() + 1;
-            const new_ms = secs * 1000;
-            const new_dt = new Date(now + new_ms);
-            return new_ms;
-        }
-        static fetch() {
-            const url = new URL(window.location.href);
-            return fetch(url.origin + "/quarry/clients");
-        }
-    }
     function render_shoutcast_title(args) {
         const div = document.querySelector("div.loading");
         if (div) {
@@ -401,19 +386,25 @@ const DA = {
         }
         return;
     }
+    function next_loop_ms(mins) {
+        const dt = new Date();
+        const now = dt.getTime();
+        const secs = (mins - dt.getMinutes() % mins) * 60 - dt.getSeconds() + 1;
+        return secs * 1000;
+    }
     function quarry_fetch_and_loop() {
         Page.start_loading();
-        return Quarry.fetch().then((resp)=>{
+        return fetch("https://www.miniuni.com/quarry/clients").then((resp)=>{
             Page.done_loading();
-            setTimeout(quarry_fetch_and_loop, Quarry.next_loop_ms());
+            setTimeout(quarry_fetch_and_loop, next_loop_ms(1));
             if (resp.status !== 200) {
                 console.log(`ERROR: ${resp.status}`);
-                return null;
+                throw new Error(`Failed to get quarry clients: ${resp.status}`);
             }
             return resp.json();
         }).then((x)=>{
             if (x && x.error === false) {
-                render_quarry_clients(x);
+                render_quarry_clients(x.data);
             } else {
                 console.log("Error in getting quarry info: ");
                 console.log(x);
@@ -425,14 +416,6 @@ const DA = {
             console.log(x);
         });
     }
-    function shoutcast_next_loop_ms() {
-        const dt = new Date();
-        const now = dt.getTime();
-        const secs = (5 - dt.getMinutes() % 5) * 60 - dt.getSeconds() + 2;
-        const new_ms = secs * 1000;
-        const new_dt = new Date(now + new_ms);
-        return new_ms;
-    }
     function shoutcast_fetch_and_loop() {
         Page.start_loading();
         return fetch("https://da99shoutcast.deno.dev/ShoutCast.json").then((resp)=>{
@@ -441,7 +424,7 @@ const DA = {
                 console.log(`ERROR: ${resp.status}`);
                 throw new Error(`shoutcast fetch: ${resp.status}`);
             }
-            setTimeout(shoutcast_fetch_and_loop, shoutcast_next_loop_ms());
+            setTimeout(shoutcast_fetch_and_loop, next_loop_ms(2));
             return resp.json();
         }).then((x)=>{
             if (x && x.channels) {
@@ -449,7 +432,7 @@ const DA = {
             }
         }).catch((x)=>{
             Page.done_loading();
-            setTimeout(shoutcast_fetch_and_loop, shoutcast_next_loop_ms());
+            setTimeout(shoutcast_fetch_and_loop, next_loop_ms(1));
             console.log(x);
         });
     }
@@ -495,22 +478,23 @@ const DA = {
             setTimeout(nhk_loop, 10000);
         });
     }
-    function render_quarry_clients(x) {
+    function render_quarry_clients(qc) {
         clear_quarry();
-        if (x) {
-            x.data.forEach((client)=>{
-                if (client.ignored) return;
-                const h = new DA.HTML(window);
-                const nickname = client.nickname === "Unknown" ? `${client.hostname}/${client.ip}` : client.nickname;
-                h.div(`.client`, {
-                    "data-client": client.nickname
-                }, nickname);
-                append_child("quarry", h.fragment());
-            });
-        }
+        qc.forEach((client)=>{
+            if (client.ignored) {
+                return;
+            }
+            const h = new DA.HTML(window);
+            const nickname = client.nickname === "Unknown" ? `${client.hostname}/${client.ip}` : client.nickname;
+            h.div(`.client`, {
+                "data-client": client.nickname
+            }, nickname);
+            append_child("quarry", h.fragment());
+        });
     }
     document.body.appendChild(H.fragment());
     console.log("Starting fetch loop.");
+    quarry_fetch_and_loop();
     shoutcast_fetch_and_loop();
     nhk_loop();
 })();

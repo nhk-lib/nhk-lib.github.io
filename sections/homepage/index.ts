@@ -8,6 +8,20 @@ import { NHK_SHOW } from "../../deno_deploy/NHK.ts";
 
 import { DA } from "../../www_modules/da/DA.mjs"
 
+interface Quarry_Client_JSON_Response {
+  error: boolean,
+  updated_at: number,
+  msg: string,
+  data: Quarry_Client[]
+} // interface
+
+interface Quarry_Client {
+  mac: string,
+  ip: string,
+  hostname: string,
+  nickname: string,
+  ignored: boolean
+} // interface
 
 interface ShoutCast_JSON_Response {
   time: number,
@@ -52,24 +66,6 @@ interface NHK_JSON_Response {
   function img(alt : string, src : string) {
     return H.new_tag("img", {alt, src});
   };
-
-  class Quarry {
-    static next_loop_ms() {
-      const min_target = 1;
-      const dt         = new Date();
-      const now        = dt.getTime();
-      const secs       = (((min_target - (dt.getMinutes() % min_target)) * 60) - dt.getSeconds()) + 1;
-
-      const new_ms = secs * 1000
-      const new_dt = new Date(now + new_ms);
-      return new_ms;
-    }
-
-    static fetch() {
-      const url = new URL(window.location.href);
-      return fetch(url.origin + "/quarry/clients");
-    }
-  } // class
 
   function render_shoutcast_title(args: any) {
     const div = document.querySelector("div.loading");
@@ -160,22 +156,29 @@ interface NHK_JSON_Response {
     return;
   } // function
 
+  function next_loop_ms(mins : number) {
+    const dt         = new Date();
+    const now        = dt.getTime();
+    const secs       = (((mins - (dt.getMinutes() % mins)) * 60) - dt.getSeconds()) + 1;
+
+    return secs * 1000;
+  }
+
   function quarry_fetch_and_loop() {
     Page.start_loading();
-    return Quarry
-    .fetch()
+    return fetch("https://www.miniuni.com/quarry/clients")
     .then((resp : Response) => {
       Page.done_loading();
-      setTimeout(quarry_fetch_and_loop, Quarry.next_loop_ms());
+      setTimeout(quarry_fetch_and_loop, next_loop_ms(1));
       if (resp.status !== 200) {
         console.log(`ERROR: ${resp.status}`);
-        return null;
+        throw new Error(`Failed to get quarry clients: ${resp.status}`);
       }
       return (resp.json());
     })
-    .then((x : any) => {
+    .then((x : Quarry_Client_JSON_Response) => {
       if (x && x.error === false) {
-        render_quarry_clients(x);
+        render_quarry_clients(x.data);
       } else {
         console.log("Error in getting quarry info: ");
         console.log(x);
@@ -189,16 +192,6 @@ interface NHK_JSON_Response {
     });
   } // function
 
-  function shoutcast_next_loop_ms() {
-    const dt   = new Date();
-    const now  = dt.getTime();
-    const secs = (((5 - (dt.getMinutes() % 5)) * 60) - dt.getSeconds()) + 2;
-
-    const new_ms = secs * 1000
-    const new_dt = new Date(now + new_ms);
-    return new_ms;
-  }
-
   function shoutcast_fetch_and_loop() {
     Page.start_loading();
     return fetch("https://da99shoutcast.deno.dev/ShoutCast.json")
@@ -208,7 +201,7 @@ interface NHK_JSON_Response {
         console.log(`ERROR: ${resp.status}`);
         throw new Error(`shoutcast fetch: ${resp.status}`);
       }
-      setTimeout(shoutcast_fetch_and_loop, shoutcast_next_loop_ms());
+      setTimeout(shoutcast_fetch_and_loop, next_loop_ms(2));
       return (resp.json());
     })
     .then((x : ShoutCast_JSON_Response) => {
@@ -218,7 +211,7 @@ interface NHK_JSON_Response {
     })
     .catch((x) => {
       Page.done_loading();
-      setTimeout(shoutcast_fetch_and_loop, shoutcast_next_loop_ms());
+      setTimeout(shoutcast_fetch_and_loop, next_loop_ms(1));
       console.log(x)
     });
   } // function
@@ -271,22 +264,22 @@ interface NHK_JSON_Response {
     });
   } // function
 
-  function render_quarry_clients(x : any) {
+  function render_quarry_clients(qc : Quarry_Client[]) {
     clear_quarry();
-    if (x) {
-      x.data.forEach((client : any) => {
-        if (client.ignored) return;
-        const h = new DA.HTML(window);
-        const nickname = client.nickname === "Unknown" ? `${client.hostname}/${client.ip}` : client.nickname;
-        h.div(`.client`, {"data-client": client.nickname}, nickname);
-        append_child("quarry", h.fragment());
+    qc.forEach((client : Quarry_Client) => {
+      if (client.ignored) {
+        return;
+      }
+      const h = new DA.HTML(window);
+      const nickname = client.nickname === "Unknown" ? `${client.hostname}/${client.ip}` : client.nickname;
+      h.div(`.client`, {"data-client": client.nickname}, nickname);
+      append_child("quarry", h.fragment());
       });
-    }
   } // function
 
   document.body.appendChild(H.fragment());
   console.log("Starting fetch loop.");
- /* quarry_fetch_and_loop(); */
+  quarry_fetch_and_loop();
   shoutcast_fetch_and_loop();
   nhk_loop();
 
