@@ -47,6 +47,14 @@ export class ShoutCast {
     let last_key : string = "";
 
     for(let m of match) {
+
+      // Once the current song title is found,
+      //  we no longer need to process anything else.
+      //  This is mainly for JpopSuki, which has multiple current songs
+      //  titles after the one we want.
+      if (info.current_title != "") 
+        break;
+
       const text = m[1].replace(ShoutCast.TAG_MATCH, "").trim();
 
       /* if (last_key !== "") */

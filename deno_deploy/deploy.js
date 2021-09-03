@@ -31,6 +31,7 @@ class ShoutCast {
         };
         let last_key = "";
         for (let m of match){
+            if (info.current_title != "") break;
             const text = m[1].replace(ShoutCast.TAG_MATCH, "").trim();
             switch(last_key){
                 case "title":
