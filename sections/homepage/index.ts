@@ -9,6 +9,16 @@ import { NHK_SHOW } from "../../deno_deploy/NHK.ts";
 import { DA } from "../../www_modules/da/DA.mjs"
 
 
+interface ShoutCast_JSON_Response {
+  time: number,
+  channels: ShoutCast_Station[]
+}
+
+interface NHK_JSON_Response {
+  time: number,
+  shows: NHK_SHOW[]
+}
+
 /* interface NHK_Show { */
 /*   seriesId: string; */
 /*   airingId: string; */
@@ -61,24 +71,7 @@ import { DA } from "../../www_modules/da/DA.mjs"
     }
   } // class
 
-  class Media_Titles {
-    static next_loop_ms() {
-      const dt   = new Date();
-      const now  = dt.getTime();
-      const secs = (((5 - (dt.getMinutes() % 5)) * 60) - dt.getSeconds()) + 2;
-
-      const new_ms = secs * 1000
-      const new_dt = new Date(now + new_ms);
-      return new_ms;
-    }
-
-    static fetch() {
-      return fetch("https://objects.diegoalban.com/shoutcast.json");
-    }
-
-  } // class
-
-  function render_media_title(args: any) {
+  function render_shoutcast_title(args: any) {
     const div = document.querySelector("div.loading");
     if (div) {
       div.remove();
@@ -98,7 +91,7 @@ import { DA } from "../../www_modules/da/DA.mjs"
     console.log(x);
   });
 
-  function render_media_titles(json : ShoutCast_Station[]) {
+  function render_shoutcast_titles(json : ShoutCast_Station[]) {
     json.forEach((x : ShoutCast_Station) => {
       render_shoutcast_station(x);
     });
@@ -196,27 +189,36 @@ import { DA } from "../../www_modules/da/DA.mjs"
     });
   } // function
 
-  function media_title_fetch_and_loop() {
+  function shoutcast_next_loop_ms() {
+    const dt   = new Date();
+    const now  = dt.getTime();
+    const secs = (((5 - (dt.getMinutes() % 5)) * 60) - dt.getSeconds()) + 2;
+
+    const new_ms = secs * 1000
+    const new_dt = new Date(now + new_ms);
+    return new_ms;
+  }
+
+  function shoutcast_fetch_and_loop() {
     Page.start_loading();
-    return Media_Titles
-    .fetch()
+    return fetch("https://da99shoutcast.deno.dev/ShoutCast.json")
     .then((resp : Response) => {
       Page.done_loading();
-      setTimeout(media_title_fetch_and_loop, Media_Titles.next_loop_ms());
       if (resp.status !== 200) {
         console.log(`ERROR: ${resp.status}`);
-        return null;
+        throw new Error(`shoutcast fetch: ${resp.status}`);
       }
+      setTimeout(shoutcast_fetch_and_loop, shoutcast_next_loop_ms());
       return (resp.json());
     })
-    .then((x : any) => {
-      if (x) {
-        render_media_titles(x);
+    .then((x : ShoutCast_JSON_Response) => {
+      if (x && x.channels) {
+        render_shoutcast_titles(x.channels);
       }
     })
     .catch((x) => {
       Page.done_loading();
-      setTimeout(media_title_fetch_and_loop, Media_Titles.next_loop_ms());
+      setTimeout(shoutcast_fetch_and_loop, shoutcast_next_loop_ms());
       console.log(x)
     });
   } // function
@@ -233,7 +235,7 @@ import { DA } from "../../www_modules/da/DA.mjs"
 
   function nhk_loop() {
     Page.start_loading();
-    fetch("https://objects.diegoalban.com/nhk.json")
+    fetch("https://da99shoutcast.deno.dev/NHK.json")
     .then((resp : Response) => {
       Page.done_loading();
       if (resp.status === 200) {
@@ -243,20 +245,22 @@ import { DA } from "../../www_modules/da/DA.mjs"
         throw(new Error("NHK Failed"));
       }
     })
-    .then((x) => {
-      x.forEach((show : NHK_SHOW) => {
-        render_nhk_show(show);
-      });
-      const show = x[0] as NHK_SHOW;
-      if (!show) {
-        throw(new Error("No shows retrieved."));
-      } else {
-        const date_now = Date.now();
-        if (show.ends_at < date_now) {
-          setTimeout(nhk_loop, 5000);
+    .then((x : NHK_JSON_Response) => {
+      if (x && x.shows) {
+        x.shows.forEach((show : NHK_SHOW) => {
+          render_nhk_show(show);
+        });
+        const show = x.shows[0] as NHK_SHOW;
+        if (!show) {
+          throw(new Error("No shows retrieved."));
         } else {
-          const next_time = Math.floor(show.ends_at - date_now);
-          setTimeout(nhk_loop, next_time + 1000);
+          const date_now = Date.now();
+          if (show.ends_at < date_now) {
+            setTimeout(nhk_loop, 5000);
+          } else {
+            const next_time = Math.floor(show.ends_at - date_now);
+            setTimeout(nhk_loop, next_time + 1000);
+          }
         }
       }
     })
@@ -282,8 +286,8 @@ import { DA } from "../../www_modules/da/DA.mjs"
 
   document.body.appendChild(H.fragment());
   console.log("Starting fetch loop.");
-  quarry_fetch_and_loop();
-  media_title_fetch_and_loop();
+ quarry_fetch_and_loop();
+  shoutcast_fetch_and_loop();
   nhk_loop();
 
 })();

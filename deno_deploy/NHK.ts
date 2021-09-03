@@ -82,7 +82,7 @@ export class NHK {
   static async response() {
     const shows = await NHK.json();
     return new Response(
-      JSON.stringify({time: Date.now(), NHK: shows}),
+      JSON.stringify({time: Date.now(), shows: shows}),
       {
         status: 200,
         headers: {
