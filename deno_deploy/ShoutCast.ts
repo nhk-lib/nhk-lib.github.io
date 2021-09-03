@@ -37,7 +37,7 @@ export class ShoutCast {
   static parse(filename : string, origin_url : string, raw : string) {
     const match = raw.matchAll(ShoutCast.TD_MATCH);
     const info : ShoutCast_Station = {
-      filename:      "",
+      filename:      filename,
       stream_url:    "",
       title:         "",
       homepage:      "",

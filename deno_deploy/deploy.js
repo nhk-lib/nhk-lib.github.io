@@ -23,7 +23,7 @@ class ShoutCast {
     static parse(filename, origin_url, raw) {
         const match = raw.matchAll(ShoutCast.TD_MATCH);
         const info = {
-            filename: "",
+            filename: filename,
             stream_url: "",
             title: "",
             homepage: "",
