@@ -1,0 +1,13 @@
+#!/usr/bin/env zsh
+#
+#
+set -u -e -o pipefail
+cd "$( dirname "$(realpath "$0")" )"/..
+local +x THIS_DIR="$PWD"
+
+
+reset
+
+echo "=== IN $PWD"
+set -x
+deno bundle sections/homepage/index.ts sections/homepage/index.js

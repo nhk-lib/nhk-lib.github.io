@@ -1,10 +1,10 @@
 
-interface Shoutcast_Station {
-  "filename"?:      string,
-  "stream_url"?:    string,
-  "title"?:         string,
-  "homepage"?:      string,
-  "current_title"?: string
+export interface ShoutCast_Station {
+  "filename":      string,
+  "stream_url":    string,
+  "title":         string,
+  "homepage":      string,
+  "current_title": string
 } // interface
 
 
@@ -36,8 +36,16 @@ export class ShoutCast {
 
   static parse(filename : string, origin_url : string, raw : string) {
     const match = raw.matchAll(ShoutCast.TD_MATCH);
-    const info : Shoutcast_Station = {};
+    const info : ShoutCast_Station = {
+      filename:      "",
+      stream_url:    "",
+      title:         "",
+      homepage:      "",
+      current_title: ""
+    };
+
     let last_key : string = "";
+
     for(let m of match) {
       const text = m[1].replace(ShoutCast.TAG_MATCH, "").trim();
 
@@ -48,9 +56,7 @@ export class ShoutCast {
         case "title":
         case "homepage":
         case "current_title":
-          if (!info[last_key]) {
-            info[last_key] = text;
-          }
+          info[last_key] = text;
           last_key = "";
         break;
 

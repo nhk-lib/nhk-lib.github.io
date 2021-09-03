@@ -25,7 +25,7 @@ interface NHK_JSON_ITEM {
   analytics:     string
 } // interface
 
-interface NHK_SHOW {
+export interface NHK_SHOW {
   airingId:        string;
   title:           string;
   description:     string;

@@ -1,65 +1,54 @@
 
-import { DA } from "../../www_modules/da/dist/src/DA"
+/// <reference no-default-lib="true"/>
+/// <reference lib="esnext" />
+/// <reference lib="dom" />
 
-interface Hostname_Inspection {
-  updated_at: number,
-  is_success: boolean
-}
+import { ShoutCast_Station } from "../../deno_deploy/ShoutCast.ts";
+import { NHK_SHOW } from "../../deno_deploy/NHK.ts";
 
-interface Shoutcast_Station {
-  filename: string;
-  stream_url: string;
-  title: string;
-  current_title: string;
-  homepage: string;
-}
+import { DA } from "../../www_modules/da/DA.mjs"
 
-interface NHK_Show {
-  seriesId: string;
-  airingId: string;
-  title: string;
-  description: string;
-  href?: string;
-  vodReserved: boolean;
-  starts_at: number,
-  ends_at: number,
-  is_recordable: boolean,
-  is_recording: boolean,
-  what_to_record: string[],
-  thumbnail_small?: string
-}
+
+/* interface NHK_Show { */
+/*   seriesId: string; */
+/*   airingId: string; */
+/*   title: string; */
+/*   description: string; */
+/*   href?: string; */
+/*   vodReserved: boolean; */
+/*   starts_at: number, */
+/*   ends_at: number, */
+/*   is_recordable: boolean, */
+/*   is_recording: boolean, */
+/*   what_to_record: string[], */
+/*   thumbnail_small?: string */
+/* } */
+
 
 (function () {
+  class Page {
+    static start_loading() {
+      return document.body.classList.add("loading");
+    } // function
+
+    static done_loading() {
+      return document.body.classList.remove("loading");
+    } // function
+  } // class
+
   const E = new DA.Event();
   const H = new DA.HTML(window);
+
   function img(alt : string, src : string) {
     return H.new_tag("img", {alt, src});
   };
 
-  function start_loading() {
-    add_class(document.body, "loading");
-  } // function
-
-  function done_loading() {
-    remove_class(document.body, "loading");
-  } // function
-
-  function add_class(e : HTMLElement, x : string) {
-    e.classList.add(x);
-    return e.className;
-  } // function
-
-  function remove_class(e : HTMLElement, x : string) {
-    e.classList.remove(x);
-    return e.className;
-  } // function
-
   class Quarry {
     static next_loop_ms() {
       const min_target = 1;
-      const dt = new Date();
-      const now = dt.getTime();
-      const secs = (((min_target - (dt.getMinutes() % min_target)) * 60) - dt.getSeconds()) + 1;
+      const dt         = new Date();
+      const now        = dt.getTime();
+      const secs       = (((min_target - (dt.getMinutes() % min_target)) * 60) - dt.getSeconds()) + 1;
 
       const new_ms = secs * 1000
       const new_dt = new Date(now + new_ms);
@@ -74,8 +63,8 @@ interface NHK_Show {
 
   class Media_Titles {
     static next_loop_ms() {
-      const dt = new Date();
-      const now = dt.getTime();
+      const dt   = new Date();
+      const now  = dt.getTime();
       const secs = (((5 - (dt.getMinutes() % 5)) * 60) - dt.getSeconds()) + 2;
 
       const new_ms = secs * 1000
@@ -89,10 +78,7 @@ interface NHK_Show {
 
   } // class
 
-  document.body.appendChild(H.fragment());
-  console.log("Starting fetch loop.");
-
-  E.on("media title rendering", (args : any) => {
+  function render_media_title(args: any) {
     const div = document.querySelector("div.loading");
     if (div) {
       div.remove();
@@ -106,19 +92,19 @@ interface NHK_Show {
       }
     }
     return div;
-  });
+  } // function
 
   E.on("media title error", (x : any) => {
     console.log(x);
   });
 
-  E.on("render media titles", function (json : Shoutcast_Station[]) {
-    json.forEach((x : Shoutcast_Station) => {
-      E.emit("render shoutcast station", x);
+  function render_media_titles(json : ShoutCast_Station[]) {
+    json.forEach((x : ShoutCast_Station) => {
+      render_shoutcast_station(x);
     });
-  }); // on
+  } // on
 
-  E.on("render nhk show", (x : any) => {
+  function render_nhk_show(x : any) {
     const id = `nhk_${x.ends_at}`;
     const e = document.getElementById(id);
     if (e || (x.ends_at <= Date.now())) { return; }
@@ -146,9 +132,9 @@ interface NHK_Show {
       () => {document.querySelectorAll(`#${id}`).forEach((x) => x.remove());},
         x.ends_at - Date.now()
     );
-  }); // on
+  } // on
 
-  E.on("render shoutcast station", (x : Shoutcast_Station) => {
+  function render_shoutcast_station(x : ShoutCast_Station) {
     const id = `shoutchast_${x.filename}`;
     const e = document.getElementById(id);
     if (e) {
@@ -163,7 +149,7 @@ interface NHK_Show {
       });
       append_child("shoutcast", h.fragment());
     }
-  }); // on
+  } // on
 
   function update_innerText(target : HTMLElement | null, txt : string) {
     if (target) {
@@ -182,11 +168,11 @@ interface NHK_Show {
   } // function
 
   function quarry_fetch_and_loop() {
-    start_loading();
+    Page.start_loading();
     return Quarry
     .fetch()
     .then((resp : Response) => {
-      done_loading();
+      Page.done_loading();
       setTimeout(quarry_fetch_and_loop, Quarry.next_loop_ms());
       if (resp.status !== 200) {
         console.log(`ERROR: ${resp.status}`);
@@ -196,14 +182,14 @@ interface NHK_Show {
     })
     .then((x : any) => {
       if (x && x.error === false) {
-        E.emit("render quarry clients", x);
+        render_quarry_clients(x);
       } else {
         console.log("Error in getting quarry info: ");
         console.log(x);
       }
     })
     .catch((x) => {
-      done_loading();
+      Page.done_loading();
       clear_quarry();
       setTimeout(quarry_fetch_and_loop, 10000);
       console.log(x)
@@ -211,11 +197,11 @@ interface NHK_Show {
   } // function
 
   function media_title_fetch_and_loop() {
-    start_loading();
+    Page.start_loading();
     return Media_Titles
     .fetch()
     .then((resp : Response) => {
-      done_loading();
+      Page.done_loading();
       setTimeout(media_title_fetch_and_loop, Media_Titles.next_loop_ms());
       if (resp.status !== 200) {
         console.log(`ERROR: ${resp.status}`);
@@ -225,11 +211,11 @@ interface NHK_Show {
     })
     .then((x : any) => {
       if (x) {
-        E.emit("render media titles", x);
+        render_media_titles(x);
       }
     })
     .catch((x) => {
-      done_loading();
+      Page.done_loading();
       setTimeout(media_title_fetch_and_loop, Media_Titles.next_loop_ms());
       console.log(x)
     });
@@ -244,42 +230,12 @@ interface NHK_Show {
     }
   } // function
 
-  function hostname_inspection_loop() {
-    start_loading();
-    fetch("https://objects.diegoalban.com/inspection.json")
-    .then((resp : Response) => {
-      done_loading();
-      setTimeout(hostname_inspection_loop, Quarry.next_loop_ms());
-      if (resp.status === 200) {
-        return resp.json();
-      } else {
-        console.log(resp);
-        throw(new Error("Hostname inspection retrieval failed."));
-      }
-    })
-    .then((x : Hostname_Inspection) => {
-      if (x.is_success) {
-        document.body.classList.add("hostname_inspection_success");
-        remove_class(document.body, "hostname_inspection_error");
-      } else {
-        document.body.classList.add("hostname_inspection_error");
-        remove_class(document.body, "hostname_inspection_success");
-      }
-    })
-    .catch((x) => {
-      done_loading();
-      console.log(x);
-      remove_class(document.body, "hostname_inspection_success");
-      remove_class(document.body, "hostname_inspection_error");
-      setTimeout(hostname_inspection_loop, 10000);
-    });
-  } // function
 
   function nhk_loop() {
-    start_loading();
+    Page.start_loading();
     fetch("https://objects.diegoalban.com/nhk.json")
     .then((resp : Response) => {
-      done_loading();
+      Page.done_loading();
       if (resp.status === 200) {
         return resp.json();
       } else {
@@ -288,10 +244,10 @@ interface NHK_Show {
       }
     })
     .then((x) => {
-      x.forEach((show : NHK_Show) => {
-        E.emit("render nhk show", show);
+      x.forEach((show : NHK_SHOW) => {
+        render_nhk_show(show);
       });
-      const show = x[0] as NHK_Show;
+      const show = x[0] as NHK_SHOW;
       if (!show) {
         throw(new Error("No shows retrieved."));
       } else {
@@ -305,13 +261,13 @@ interface NHK_Show {
       }
     })
     .catch((x) => {
-      done_loading();
+      Page.done_loading();
       console.log(x);
       setTimeout( nhk_loop, 10000);
     });
   } // function
 
-  E.on("render quarry clients", function (x : any) {
+  function render_quarry_clients(x : any) {
     clear_quarry();
     if (x) {
       x.data.forEach((client : any) => {
@@ -322,11 +278,12 @@ interface NHK_Show {
         append_child("quarry", h.fragment());
       });
     }
-  });
+  } // function
 
+  document.body.appendChild(H.fragment());
+  console.log("Starting fetch loop.");
   quarry_fetch_and_loop();
-  /* media_title_fetch_and_loop(); */
-  /* nhk_loop(); */
-  /* hostname_inspection_loop(); */
+  media_title_fetch_and_loop();
+  nhk_loop();
 
 })();
