@@ -308,20 +308,7 @@ const DA = {
             return fetch(url.origin + "/quarry/clients");
         }
     }
-    class Media_Titles {
-        static next_loop_ms() {
-            const dt = new Date();
-            const now = dt.getTime();
-            const secs = (5 - dt.getMinutes() % 5) * 60 - dt.getSeconds() + 2;
-            const new_ms = secs * 1000;
-            const new_dt = new Date(now + new_ms);
-            return new_ms;
-        }
-        static fetch() {
-            return fetch("https://objects.diegoalban.com/shoutcast.json");
-        }
-    }
-    function render_media_title(args) {
+    function render_shoutcast_title(args) {
         const div = document.querySelector("div.loading");
         if (div) {
             div.remove();
@@ -339,7 +326,7 @@ const DA = {
     E.on("media title error", (x)=>{
         console.log(x);
     });
-    function render_media_titles(json) {
+    function render_shoutcast_titles(json) {
         json.forEach((x)=>{
             render_shoutcast_station(x);
         });
@@ -438,23 +425,31 @@ const DA = {
             console.log(x);
         });
     }
-    function media_title_fetch_and_loop() {
+    function shoutcast_next_loop_ms() {
+        const dt = new Date();
+        const now = dt.getTime();
+        const secs = (5 - dt.getMinutes() % 5) * 60 - dt.getSeconds() + 2;
+        const new_ms = secs * 1000;
+        const new_dt = new Date(now + new_ms);
+        return new_ms;
+    }
+    function shoutcast_fetch_and_loop() {
         Page.start_loading();
-        return Media_Titles.fetch().then((resp)=>{
+        return fetch("https://da99shoutcast.deno.dev/ShoutCast.json").then((resp)=>{
             Page.done_loading();
-            setTimeout(media_title_fetch_and_loop, Media_Titles.next_loop_ms());
             if (resp.status !== 200) {
                 console.log(`ERROR: ${resp.status}`);
-                return null;
+                throw new Error(`shoutcast fetch: ${resp.status}`);
             }
+            setTimeout(shoutcast_fetch_and_loop, shoutcast_next_loop_ms());
             return resp.json();
         }).then((x)=>{
-            if (x) {
-                render_media_titles(x);
+            if (x && x.channels) {
+                render_shoutcast_titles(x.channels);
             }
         }).catch((x)=>{
             Page.done_loading();
-            setTimeout(media_title_fetch_and_loop, Media_Titles.next_loop_ms());
+            setTimeout(shoutcast_fetch_and_loop, shoutcast_next_loop_ms());
             console.log(x);
         });
     }
@@ -468,7 +463,7 @@ const DA = {
     }
     function nhk_loop() {
         Page.start_loading();
-        fetch("https://objects.diegoalban.com/nhk.json").then((resp)=>{
+        fetch("https://da99shoutcast.deno.dev/NHK.json").then((resp)=>{
             Page.done_loading();
             if (resp.status === 200) {
                 return resp.json();
@@ -477,19 +472,21 @@ const DA = {
                 throw new Error("NHK Failed");
             }
         }).then((x)=>{
-            x.forEach((show)=>{
-                render_nhk_show(show);
-            });
-            const show = x[0];
-            if (!show) {
-                throw new Error("No shows retrieved.");
-            } else {
-                const date_now = Date.now();
-                if (show.ends_at < date_now) {
-                    setTimeout(nhk_loop, 5000);
+            if (x && x.shows) {
+                x.shows.forEach((show)=>{
+                    render_nhk_show(show);
+                });
+                const show = x.shows[0];
+                if (!show) {
+                    throw new Error("No shows retrieved.");
                 } else {
-                    const next_time = Math.floor(show.ends_at - date_now);
-                    setTimeout(nhk_loop, next_time + 1000);
+                    const date_now = Date.now();
+                    if (show.ends_at < date_now) {
+                        setTimeout(nhk_loop, 5000);
+                    } else {
+                        const next_time = Math.floor(show.ends_at - date_now);
+                        setTimeout(nhk_loop, next_time + 1000);
+                    }
                 }
             }
         }).catch((x)=>{
@@ -515,6 +512,6 @@ const DA = {
     document.body.appendChild(H.fragment());
     console.log("Starting fetch loop.");
     quarry_fetch_and_loop();
-    media_title_fetch_and_loop();
+    shoutcast_fetch_and_loop();
     nhk_loop();
 })();

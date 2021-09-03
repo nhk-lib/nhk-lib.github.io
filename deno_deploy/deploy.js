@@ -23,6 +23,11 @@ class ShoutCast {
     static parse(filename, origin_url, raw) {
         const match = raw.matchAll(ShoutCast.TD_MATCH);
         const info = {
+            filename: "",
+            stream_url: "",
+            title: "",
+            homepage: "",
+            current_title: ""
         };
         let last_key = "";
         for (let m of match){
@@ -31,9 +36,7 @@ class ShoutCast {
                 case "title":
                 case "homepage":
                 case "current_title":
-                    if (!info[last_key]) {
-                        info[last_key] = text;
-                    }
+                    info[last_key] = text;
                     last_key = "";
                     break;
                 default:
@@ -140,7 +143,7 @@ class NHK {
         const shows = await NHK.json();
         return new Response(JSON.stringify({
             time: Date.now(),
-            NHK: shows
+            shows: shows
         }), {
             status: 200,
             headers: {
@@ -152,7 +155,7 @@ class NHK {
     }
 }
 const importMeta = {
-    url: "file:///play/apps/diegoalban/deno_deploy/main.ts",
+    url: "file:///play/apps/nhk-lib.github.io/deno_deploy/main.ts",
     main: import.meta.main
 };
 const GIT_REPO = "https://raw.githubusercontent.com/da99/diegoalban/master/Public";
@@ -196,7 +199,12 @@ addEventListener("fetch", (event)=>{
     const { pathname  } = new URL(event.request.url);
     switch(pathname){
         case "/":
-            event.respondWith(get_file(event, "/index.html"));
+            event.respondWith(new Response("not ready", {
+                status: 200,
+                headers: {
+                    "content-type": "text/plain"
+                }
+            }));
             break;
         case "/info":
             event.respondWith(new Response(importMeta.url, {
