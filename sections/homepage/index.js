@@ -511,7 +511,6 @@ const DA = {
     }
     document.body.appendChild(H.fragment());
     console.log("Starting fetch loop.");
-    quarry_fetch_and_loop();
     shoutcast_fetch_and_loop();
     nhk_loop();
 })();
