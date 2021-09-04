@@ -188,7 +188,7 @@ interface NHK_JSON_Response {
       Page.done_loading();
       clear_quarry();
       setTimeout(quarry_fetch_and_loop, 10000);
-      console.log(x)
+      console.log(x);
     });
   } // function
 
