@@ -20,6 +20,16 @@ class ShoutCast {
     static TD_MATCH = /<td(?:[^>]*)>(.+?)<\/td>/g;
     static TAG_MATCH = /(<([^>]+)>)/gi;
     static TRAILING_COLON = /\:$/;
+    static error(err, filename, origin_url) {
+        const info = {
+            filename: filename,
+            stream_url: origin_url,
+            title: filename,
+            homepage: origin_url,
+            current_title: err.toString()
+        };
+        return info;
+    }
     static parse(filename, origin_url, raw) {
         const match = raw.matchAll(ShoutCast.TD_MATCH);
         const info = {
@@ -69,6 +79,7 @@ class ShoutCast {
             const url = ShoutCast.URLS[f];
             return fetch(url, ShoutCast.request_options).then((resp)=>resp.text()
             ).then((txt)=>ShoutCast.parse(f, url, txt)
+            ).catch((err)=>ShoutCast.error(err, f, url)
             );
         });
         return Promise.all(fetches);

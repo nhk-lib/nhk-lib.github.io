@@ -15,7 +15,7 @@ export class ShoutCast {
     channel_99:    "http://155.138.139.156:8099/",
     channel_99_hd: "http://155.138.139.156:9999/",
     channel_99_b:  "http://155.138.139.156:8199/",
-    jpopsuki:      "http://213.239.204.252:8000/"
+    // jpopsuki:      "http://213.239.204.252:8000/"
   };
 
   static request_options = {
@@ -33,6 +33,17 @@ export class ShoutCast {
   static TD_MATCH       = /<td(?:[^>]*)>(.+?)<\/td>/g;
   static TAG_MATCH      = /(<([^>]+)>)/gi;
   static TRAILING_COLON = /\:$/;
+
+  static error(err : Error, filename : string, origin_url : string) {
+    const info : ShoutCast_Station = {
+      filename:      filename,
+      stream_url:    origin_url,
+      title:         filename,
+      homepage:      origin_url,
+      current_title: err.toString()
+    };
+    return info;
+  } // static
 
   static parse(filename : string, origin_url : string, raw : string) {
     const match = raw.matchAll(ShoutCast.TD_MATCH);
@@ -101,7 +112,8 @@ export class ShoutCast {
       const url : string = ShoutCast.URLS[f];
       return fetch(url, ShoutCast.request_options)
       .then((resp) => resp.text())
-      .then((txt) => ShoutCast.parse(f, url, txt));
+      .then((txt) => ShoutCast.parse(f, url, txt))
+      .catch((err) => ShoutCast.error(err, f, url));
     });
 
     return Promise.all(fetches);
