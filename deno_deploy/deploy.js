@@ -4,8 +4,7 @@ class ShoutCast {
         channel_101_b: "http://155.138.139.156:9101/",
         channel_99: "http://155.138.139.156:8099/",
         channel_99_hd: "http://155.138.139.156:9999/",
-        channel_99_b: "http://155.138.139.156:8199/",
-        jpopsuki: "http://213.239.204.252:8000/"
+        channel_99_b: "http://155.138.139.156:8199/"
     };
     static request_options = {
         method: "GET",
