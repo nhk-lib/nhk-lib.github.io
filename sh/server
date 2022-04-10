@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -u -e -o pipefail
+
+case "$*" in
+  "")
+    set -x
+    sh/build
+    deployctl run --libs="" --watch ./deno_deploy/deploy.js
+    ;;
+
+  *)
+    echo "!!! Unknown commands: $0 $*" >&2
+    exit 2
+    ;;
+esac
