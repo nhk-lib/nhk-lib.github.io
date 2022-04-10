@@ -15,7 +15,7 @@ export class ShoutCast {
     channel_99:    "http://155.138.139.156:8099/",
     channel_99_hd: "http://155.138.139.156:9999/",
     channel_99_b:  "http://155.138.139.156:8199/",
-    // jpopsuki:      "http://213.239.204.252:8000/"
+    jpopsuki:      "http://65.21.170.149:8000/"
   };
 
   static request_options = {

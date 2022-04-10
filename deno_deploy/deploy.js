@@ -1,10 +1,15 @@
+// deno-fmt-ignore-file
+// deno-lint-ignore-file
+// This code was bundled using `deno bundle` and it's not recommended to edit it manually
+
 class ShoutCast {
     static URLS = {
         channel_101: "http://155.138.139.156:8101/",
         channel_101_b: "http://155.138.139.156:9101/",
         channel_99: "http://155.138.139.156:8099/",
         channel_99_hd: "http://155.138.139.156:9999/",
-        channel_99_b: "http://155.138.139.156:8199/"
+        channel_99_b: "http://155.138.139.156:8199/",
+        jpopsuki: "http://65.21.170.149:8000/"
     };
     static request_options = {
         method: "GET",
@@ -107,8 +112,8 @@ class NHK {
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
         "Accept-Language": "en-US,en;q=0.9,en-GB;q=0.8"
     };
-    static string_join(x, j) {
-        return x.filter((x)=>{
+    static string_join(x1, j) {
+        return x1.filter((x)=>{
             return x.length > 0;
         }).join(j).replace(NHK.WHITESPACE, " ").trim();
     }
@@ -172,7 +177,7 @@ const importMeta = {
 const GIT_REPO = "https://raw.githubusercontent.com/da99/diegoalban/master/Public";
 async function get_file(event, path) {
     const origin = new URL(event.request.url);
-    const old_headers = event.request.headers;
+    event.request.headers;
     const new_url = `${GIT_REPO}${path}${origin.search}`;
     console.log(new_url);
     const result = await fetch(new_url, {

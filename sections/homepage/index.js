@@ -1,9 +1,12 @@
+// deno-fmt-ignore-file
+// deno-lint-ignore-file
+// This code was bundled using `deno bundle` and it's not recommended to edit it manually
+
 const ASTERISK = "*";
 const WHITESPACE = /(\s+)/;
 class DA_Event {
     constructor(){
-        this._events = {
-        };
+        this._events = {};
     }
     on(raw_key, func) {
         let new_key = this._standard_msg(raw_key);
@@ -85,8 +88,8 @@ class DA_Element {
     }
 }
 class DA_HTML {
-    constructor(window1){
-        this.window = window1;
+    constructor(window){
+        this.window = window;
         this.document = this.window.document;
         this._fragment = this.document.createDocumentFragment();
         this.current = [
@@ -271,8 +274,8 @@ const WHITESPACE_PATTERN = /\s+/;
 const DA = {
     HTML: DA_HTML,
     Event: DA_Event,
-    split_whitespace: function(x) {
-        return x.split(WHITESPACE_PATTERN).filter((x1)=>x1.length != 0
+    split_whitespace: function(x1) {
+        return x1.split(WHITESPACE_PATTERN).filter((x)=>x.length != 0
         );
     }
 };
@@ -287,27 +290,6 @@ const DA = {
     }
     const E = new DA.Event();
     const H = new DA.HTML(window);
-    function img(alt, src) {
-        return H.new_tag("img", {
-            alt,
-            src
-        });
-    }
-    function render_shoutcast_title(args) {
-        const div = document.querySelector("div.loading");
-        if (div) {
-            div.remove();
-            const h = new DA.HTML(window);
-            h.div("#updated_at", new Date().toString());
-            document.body.appendChild(h.fragment());
-        } else {
-            const ua = document.getElementById("updated_at");
-            if (ua) {
-                ua.innerText = new Date().toString();
-            }
-        }
-        return div;
-    }
     E.on("media title error", (x)=>{
         console.log(x);
     });
@@ -316,43 +298,43 @@ const DA = {
             render_shoutcast_station(x);
         });
     }
-    function render_nhk_show(x) {
-        const id = `nhk_${x.ends_at}`;
+    function render_nhk_show(x1) {
+        const id = `nhk_${x1.ends_at}`;
         const e = document.getElementById(id);
-        if (e || x.ends_at <= Date.now()) {
+        if (e || x1.ends_at <= Date.now()) {
             return;
         }
         const h = new DA.HTML(window);
         let _id = [
             `#${id}.nhk_show`,
-            x.is_recordable ? ".recordable" : ".not_recordable",
-            x.is_recording ? ".recording" : ".not_recording"
+            x1.is_recordable ? ".recordable" : ".not_recordable",
+            x1.is_recording ? ".recording" : ".not_recording"
         ].join(" ");
         h.div(_id, {
-            title: x.is_recordable ? x.what_to_record.toString() : "regular"
+            title: x1.is_recordable ? x1.what_to_record.toString() : "regular"
         }, ()=>{
             h.div(".title", ()=>{
-                if (x.href) {
+                if (x1.href) {
                     h.a({
-                        href: x.href
-                    }, x.title);
+                        href: x1.href
+                    }, x1.title);
                 } else {
-                    h.target().appendChild(h.text_node(x.title));
+                    h.target().appendChild(h.text_node(x1.title));
                 }
-                if (x.title != "NHK NEWSLINE" && x.thumbnail_small) {
+                if (x1.title != "NHK NEWSLINE" && x1.thumbnail_small) {
                     h.new_tag("img", {
-                        alt: `preview of ${x.title}`,
-                        src: x.thumbnail_small
+                        alt: `preview of ${x1.title}`,
+                        src: x1.thumbnail_small
                     });
                 }
             });
-            h.div(".description", x.description);
+            h.div(".description", x1.description);
         });
         append_child("nhk", h.fragment());
         setTimeout(()=>{
-            document.querySelectorAll(`#${id}`).forEach((x1)=>x1.remove()
+            document.querySelectorAll(`#${id}`).forEach((x)=>x.remove()
             );
-        }, x.ends_at - Date.now());
+        }, x1.ends_at - Date.now());
     }
     function render_shoutcast_station(x) {
         const id = `shoutchast_${x.filename}`;
@@ -388,7 +370,7 @@ const DA = {
     }
     function next_loop_ms(mins) {
         const dt = new Date();
-        const now = dt.getTime();
+        dt.getTime();
         const secs = (mins - dt.getMinutes() % mins) * 60 - dt.getSeconds() + 1;
         return secs * 1000;
     }
@@ -459,15 +441,15 @@ const DA = {
                 x.shows.forEach((show)=>{
                     render_nhk_show(show);
                 });
-                const show = x.shows[0];
-                if (!show) {
+                const show1 = x.shows[0];
+                if (!show1) {
                     throw new Error("No shows retrieved.");
                 } else {
                     const date_now = Date.now();
-                    if (show.ends_at < date_now) {
+                    if (show1.ends_at < date_now) {
                         setTimeout(nhk_loop, 5000);
                     } else {
-                        const next_time = Math.floor(show.ends_at - date_now);
+                        const next_time = Math.floor(show1.ends_at - date_now);
                         setTimeout(nhk_loop, next_time + 1000);
                     }
                 }
