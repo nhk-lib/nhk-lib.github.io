@@ -57,13 +57,19 @@ function title(ip: string): string {
   return 'unknown';
 }
 
-function loop_ms() {
+function loop_ms(): number {
   const x = new Date();
   const hours = x.getHours();
-  if (hours > 12 + 2 && hours < 12 + 7)
-    next_loop_ms(1);
-  if (hours > 4 && hours < 10)
-    next_loop_ms(1);
+
+  if (hours > 12 + 1)
+    return next_loop_ms(1);
+
+  if (hours > 3 && hours < 10)
+    return next_loop_ms(5);
+
+  if (hours > 0 && hours < 4)
+    return next_loop_ms(10);
+
   return next_loop_ms(5);
 }
 
