@@ -45,6 +45,7 @@ function first_seen(c: Quarry_Client): string {
 function last_seen(ip: string) {
   delete FIRST_SEEN_IP[ip];
   LAST_SEEN_IP[ip] = date();
+  console.log(`Left: ${ip} ${date()}`);
   return LAST_SEEN_IP[ip];
 }
 
@@ -54,6 +55,16 @@ function title(ip: string): string {
   if (ip in LAST_SEEN_IP)
     return `left: ${LAST_SEEN_IP[ip]}`;
   return 'unknown';
+}
+
+function loop_ms() {
+  const x = new Date();
+  const hours = x.getHours();
+  if (hours > 12 + 2 && hours < 12 + 7)
+    next_loop_ms(1);
+  if (hours > 4 && hours < 10)
+    next_loop_ms(1);
+  return next_loop_ms(5);
 }
 
 export const Quarry_DOM = {
@@ -69,7 +80,7 @@ export const Quarry_DOM = {
       const ips = Object.keys(FIRST_SEEN_IP);
       for (const [ip, __string] of Object.entries(FIRST_SEEN_IP)) {
         if (!ips.includes(ip))
-          delete FIRST_SEEN_IP[ip];
+          last_seen(ip);
       }
 
       for (const client of clients) {
@@ -93,7 +104,7 @@ export const Quarry_DOM = {
     return fetch("https://www.miniuni.com/quarry/clients")
     .then((resp : Response) => {
       not_loading(MAIN_DIV);
-      setTimeout(Quarry_DOM.fetch, next_loop_ms(1));
+      setTimeout(Quarry_DOM.fetch, loop_ms());
       if (resp.status !== 200) {
         console.log(`ERROR: ${resp.status}`);
         throw new Error(`Failed to get quarry clients: ${resp.status}`);

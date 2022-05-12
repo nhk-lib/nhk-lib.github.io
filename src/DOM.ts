@@ -9,8 +9,8 @@ export const ATTR_STRING = /^[\#\.]{1}[\.\#a-z\_\-0-9]+$/;
 
 /*
   * Returns the number of milliseconds until the next
-  * minute:
-  *   5:43 PM -> 60 - 43 * 1000
+  * x minute:
+  *   x = 5 @ 5:43 PM -> 45 - (43 % 5) = 2 minutes in milliseconds
   */
 export function next_loop_ms(mins : number) {
   const dt   = new Date();
