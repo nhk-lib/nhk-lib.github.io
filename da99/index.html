@@ -17,9 +17,17 @@
       </p>
       <img alt="A photo of a cat." src="https://live.staticflickr.com/65535/49718232021_a195e687b5_n.jpg"></img>
     </noscript>
-    <div id="shoutcast"></div>
+    <div id="shout_cast"></div>
     <div id="quarry"></div>
-    <div id="nhk"></div>
+    <div id="nhk" data-model="NHK">
+      <div class="loading">loading...</div>
+      <template data-for-each=".show">
+        <div class="show" data-enable-class-if=".is_playing is_playing">
+          <div class="name"><template>.name</template></div>
+          <div class="title"><template>.title</template></div>
+        </div>
+      </template>
+    </div>
   </body>
-  <script type="module" src="/sections/homepage/index.js"></script>
+  <script defer type="module" src="/sections/homepage/index.mjs"></script>
 </html>
