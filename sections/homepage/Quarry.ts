@@ -24,36 +24,41 @@ interface Quarry_Client {
   ignored:  boolean
 } // interface
 
+interface Movement {
+  date: string,
+  client: Quarry_Client
+}
+
 
 let MAIN_DIV = '#quarry';
 
-const FIRST_SEEN_IP: Record<string, string> = {};
-const LAST_SEEN_IP: Record<string, string> = {};
+const IN_HOUSE: Record<string, Movement> = {};
+let CURRENT_HOUSE: Record<string, Movement> = {};
+const OUT_HOUSE: Record<string, Movement> = {};
 
 function date() {
-  return (new Date()).toString().split(' ').slice(0,5).join(' ');
+  return (new Date()).toLocaleString();
 }
 
 function first_seen(c: Quarry_Client): string {
-  delete LAST_SEEN_IP[c.ip];
-  if (!(c.ip in FIRST_SEEN_IP)) {
-    FIRST_SEEN_IP[c.ip] = date();
+  delete OUT_HOUSE[c.ip];
+  if (!(c.ip in IN_HOUSE)) {
+    IN_HOUSE[c.ip] = {date: date(), client: c};
   }
-  return FIRST_SEEN_IP[c.ip];
+  return IN_HOUSE[c.ip].date;
 }
 
-function last_seen(ip: string) {
-  delete FIRST_SEEN_IP[ip];
-  LAST_SEEN_IP[ip] = date();
-  console.log(`Left: ${ip} ${date()}`);
-  return LAST_SEEN_IP[ip];
+function now_gone(c: Quarry_Client): string {
+  delete IN_HOUSE[c.ip];
+  const now = date();
+  OUT_HOUSE[c.ip] = {date: now, client: c};
+  console.log(`Left: ${c.nickname} (${c.ip}) @ ${now}`);
+  return OUT_HOUSE[c.ip].date;
 }
 
 function title(ip: string): string {
-  if (ip in FIRST_SEEN_IP)
-    return `entered: ${FIRST_SEEN_IP[ip]}`;
-  if (ip in LAST_SEEN_IP)
-    return `left: ${LAST_SEEN_IP[ip]}`;
+  if (ip in IN_HOUSE)
+    return `entered: ${IN_HOUSE[ip].date}`;
   return 'unknown';
 }
 
@@ -83,12 +88,18 @@ export const Quarry_DOM = {
     clients: function (clients : Quarry_Client[]) {
       const f = document.createDocumentFragment();
 
-      const ips = Object.keys(FIRST_SEEN_IP);
-      for (const [ip, __string] of Object.entries(FIRST_SEEN_IP)) {
-        if (!ips.includes(ip))
-          last_seen(ip);
-      }
+      CURRENT_HOUSE = clients.reduce((p, c) => {
+        p[c.ip] = {date: date(), client: c};
+        return p;
+      } , {} as Record<string, Movement>);
 
+      // Find out which ips are now gone:
+      for (const [in_ip, mov] of Object.entries(IN_HOUSE)) {
+        if (!(in_ip in CURRENT_HOUSE))
+          now_gone(mov.client);
+      } // for
+
+      // Finish creating document fragment:
       for (const client of clients) {
         first_seen(client);
         if (client.ignored) { continue; }
@@ -96,7 +107,7 @@ export const Quarry_DOM = {
         f.appendChild(
           div('.client', {'title': title(client.ip)}, nickname)
         );
-      };
+      } // for
 
       empty(MAIN_DIV);
       append_child(MAIN_DIV, f);

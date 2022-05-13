@@ -14,16 +14,17 @@ body.hostname_inspection_error {
   border-top: 5px solid #f36161;
 }
 
-body.loading {
+div.loading {
   background: #ed9918;
 }
 
 div.nhk_show.recordable {
-  background: #ed9918;
+  background: #ed6600;
 }
-div.nhk_show.recordable.recording {
+
+/* div.nhk_show.recordable.recording {
   background: #e43000;
-}
+} */
 
 a:link,
 a:visited {
@@ -33,11 +34,6 @@ a:visited {
 a:hover {
   background: #e43000;
   color: #fff;
-}
-
-#shout_cast.loading,
-#quarry.loading {
-  background: #ed9918;
 }
 
 div.station,

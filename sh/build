@@ -10,5 +10,5 @@ reset
 
 echo "=== IN $PWD"
 set -x
-deno bundle sections/homepage/index.ts sections/homepage/index.js
+deno bundle sections/homepage/index.ts sections/homepage/index.mjs
 deno bundle deno_deploy/main.ts deno_deploy/deploy.js

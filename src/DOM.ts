@@ -20,13 +20,10 @@ export function next_loop_ms(mins : number) {
   return secs * 1000;
 } // export function
 
-export function fragment(x: HTMLElement | HTMLElement[]) {
+export function fragment(...args: Node[]) {
   const f = document.createDocumentFragment();
-  if (typeof x === "object" && x.constructor.name === "Array") {
-    for (const e of x as HTMLElement[])
-      f.appendChild(e);
-  } else {
-    f.appendChild(x as HTMLElement);
+  for (const x of args) {
+    f.appendChild(x);
   }
   return f;
 } // export function
@@ -70,6 +67,10 @@ export function empty(q: string): Node[] {
 export function div(...args: Array<Attrs | Node | Node[]>) { // attrs: Attrs = '', body: Element_Body = '') {
   return new_tag('div', ...args);
 } // export functionn
+
+export function br() {
+  return new_tag('br');
+} // export function
 
 export function a(...args: Array<Attrs | Node | Node[]>) { // attrs: Attrs = '', body: Element_Body = '') {
   return new_tag('a', ...args);

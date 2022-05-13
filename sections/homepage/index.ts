@@ -6,7 +6,7 @@
 // import { DA } from "../../www_modules/da/DA.mjs"
 
 import { Shout_Cast_DOM } from "./Shout_Cast.ts";
-// import { NHK_DOM } from "./NHK.ts";
+import { NHK_DOM } from "./NHK.ts";
 import { Quarry_DOM } from "./Quarry.ts";
 
 import {
@@ -19,7 +19,7 @@ import {
 
 Quarry_DOM.initialize('#quarry');
 Shout_Cast_DOM.initialize('#shout_cast');
-// NHK_DOM.initialize('#nhk');
+NHK_DOM.initialize('#nhk');
 
 not_loading('body');
 
