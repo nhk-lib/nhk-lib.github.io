@@ -7,10 +7,11 @@ import { NHK_SHOW } from "../../deno_deploy/NHK.ts";
 import {
   not_loading, loading,
   div, a, img, append_child, inner_text, empty,
-  fragment, next_loop_ms, br
+  fragment, next_loop_ms, br, is_loading
 } from "../../src/DOM.ts";
 
 let MAIN_DIV = '#nhk';
+
 interface NHK_JSON_Response {
   time:  number,
   shows: NHK_SHOW[]
@@ -26,8 +27,16 @@ export const NHK_DOM = {
     return `nhk_${x.ends_at}`;
   },
 
+  focus() {
+    return NHK_DOM.fetch();
+  },
+
   async fetch() {
+    if (document.hidden || is_loading(MAIN_DIV))
+      return false;
+
     loading(MAIN_DIV);
+
     return fetch("https://da99shoutcast.deno.dev/NHK.json")
     .then((resp : Response) => {
       not_loading(MAIN_DIV);

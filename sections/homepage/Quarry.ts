@@ -5,8 +5,8 @@
 import {
   not_loading, loading,
   div, append_child, empty,
-  fragment, next_loop_ms,
-  set_attribute
+  next_loop_ms,
+  set_attribute, is_loading
 } from "../../src/DOM.ts";
 
 interface Quarry_Client_JSON_Response {
@@ -32,9 +32,9 @@ interface Movement {
 
 let MAIN_DIV = '#quarry';
 
-const IN_HOUSE: Record<string, Movement> = {};
+const IN_HOUSE:    Record<string, Movement> = {};
 let CURRENT_HOUSE: Record<string, Movement> = {};
-const OUT_HOUSE: Record<string, Movement> = {};
+const OUT_HOUSE:   Record<string, Movement> = {};
 
 function date() {
   return (new Date()).toLocaleString();
@@ -84,6 +84,10 @@ export const Quarry_DOM = {
     Quarry_DOM.fetch();
   },
 
+  focus() {
+    return Quarry_DOM.fetch();
+  },
+
   update: {
     clients: function (clients : Quarry_Client[]) {
       const f = document.createDocumentFragment();
@@ -117,7 +121,11 @@ export const Quarry_DOM = {
   },
 
   async fetch() {
+    if (document.hidden || is_loading(MAIN_DIV))
+      return false;
+
     loading(MAIN_DIV);
+
     return fetch("https://www.miniuni.com/quarry/clients")
     .then((resp : Response) => {
       not_loading(MAIN_DIV);

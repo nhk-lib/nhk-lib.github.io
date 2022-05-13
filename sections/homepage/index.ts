@@ -21,5 +21,14 @@ Quarry_DOM.initialize('#quarry');
 Shout_Cast_DOM.initialize('#shout_cast');
 NHK_DOM.initialize('#nhk');
 
+function update_page() {
+  if (!document.hidden) {
+    NHK_DOM.focus();
+    Quarry_DOM.focus();
+    Shout_Cast_DOM.focus();
+  }
+}
+
+document.addEventListener('visibilitychange', update_page);
 not_loading('body');
 

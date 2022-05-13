@@ -5,12 +5,13 @@
 import {
   not_loading, loading,
   div, a, img, append_child, inner_text, empty,
-  fragment, next_loop_ms
+  fragment, next_loop_ms, is_loading
 } from "../../src/DOM.ts";
 
 import { ShoutCast_Station } from "../../deno_deploy/ShoutCast.ts";
 
 let MAIN_DIV = '#shout_cast';
+let IS_FETCHING = false;
 
 interface ShoutCast_JSON_Response {
   time: number,
@@ -20,6 +21,10 @@ interface ShoutCast_JSON_Response {
 export const Shout_Cast_DOM = {
   id(x: ShoutCast_Station) {
     return `shout_cast_${x.filename}`;
+  },
+
+  focus() {
+    return Shout_Cast_DOM.fetch();
   },
 
   create: {
@@ -50,7 +55,11 @@ export const Shout_Cast_DOM = {
   }, // update
 
   async fetch() {
+    if (document.hidden || is_loading(MAIN_DIV))
+      return false;
+
     loading(MAIN_DIV);
+
     return fetch("https://da99shoutcast.deno.dev/ShoutCast.json")
     .then((resp : Response) => {
       not_loading(MAIN_DIV);

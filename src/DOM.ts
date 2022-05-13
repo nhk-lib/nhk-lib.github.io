@@ -167,6 +167,15 @@ function split_attributes(str: string): Record<string, string> {
   return new_attr;
 } // function
 
+export function is_loading(q: string): boolean {
+  const nodes = Array.from(document.querySelectorAll(q));
+  for (const e of nodes) {
+    if (e.matches('.loading'))
+      return true;
+  }
+  return false;
+} // export function
+
 export function loading(q: string): Node[] {
   const nodes = Array.from(document.querySelectorAll(q));
   for (const e of nodes)

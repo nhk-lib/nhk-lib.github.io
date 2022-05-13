@@ -123,6 +123,13 @@ function split_attributes(str) {
     }
     return new_attr;
 }
+function is_loading(q) {
+    const nodes = Array.from(document.querySelectorAll(q));
+    for (const e of nodes){
+        if (e.matches('.loading')) return true;
+    }
+    return false;
+}
 function loading(q) {
     const nodes = Array.from(document.querySelectorAll(q));
     for (const e of nodes)e.classList.add('loading');
@@ -167,6 +174,9 @@ const Shout_Cast_DOM = {
     id (x) {
         return `shout_cast_${x.filename}`;
     },
+    focus () {
+        return Shout_Cast_DOM.fetch();
+    },
     create: {
         station (x) {
             const id = Shout_Cast_DOM.id(x);
@@ -185,6 +195,7 @@ const Shout_Cast_DOM = {
         }
     },
     async fetch () {
+        if (document.hidden || is_loading(MAIN_DIV)) return false;
         loading(MAIN_DIV);
         return fetch("https://da99shoutcast.deno.dev/ShoutCast.json").then((resp)=>{
             not_loading(MAIN_DIV);
@@ -220,7 +231,11 @@ const NHK_DOM = {
     id (x) {
         return `nhk_${x.ends_at}`;
     },
+    focus () {
+        return NHK_DOM.fetch();
+    },
     async fetch () {
+        if (document.hidden || is_loading(MAIN_DIV1)) return false;
         loading(MAIN_DIV1);
         return fetch("https://da99shoutcast.deno.dev/NHK.json").then((resp)=>{
             not_loading(MAIN_DIV1);
@@ -315,6 +330,9 @@ const Quarry_DOM = {
         MAIN_DIV2 = main;
         Quarry_DOM.fetch();
     },
+    focus () {
+        return Quarry_DOM.fetch();
+    },
     update: {
         clients: function(clients) {
             const f = document.createDocumentFragment();
@@ -345,6 +363,7 @@ const Quarry_DOM = {
         }
     },
     async fetch () {
+        if (document.hidden || is_loading(MAIN_DIV2)) return false;
         loading(MAIN_DIV2);
         return fetch("https://www.miniuni.com/quarry/clients").then((resp)=>{
             not_loading(MAIN_DIV2);
@@ -372,4 +391,12 @@ const Quarry_DOM = {
 Quarry_DOM.initialize('#quarry');
 Shout_Cast_DOM.initialize('#shout_cast');
 NHK_DOM.initialize('#nhk');
+function update_page() {
+    if (!document.hidden) {
+        NHK_DOM.focus();
+        Quarry_DOM.focus();
+        Shout_Cast_DOM.focus();
+    }
+}
+document.addEventListener('visibilitychange', update_page);
 not_loading('body');
