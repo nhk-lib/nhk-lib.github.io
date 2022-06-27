@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#
+#
+set -u -e -o pipefail
+
+echo "=== IN $PWD"
+set -x
+secrets DENO_DEPLOY deployctl deploy --project=da99shoutcast --exclude=node_modules --no-static "https://github.com/nhk-lib/nhk-lib.github.io/raw/main/deno_deploy/deploy.js"

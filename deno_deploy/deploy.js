@@ -104,7 +104,7 @@ class ShoutCast {
     }
 }
 class NHK {
-    static JSON = "http://api.nhk.or.jp/nhkworld/epg/v7a/world/now.json?apikey=EJfK8jdS57GqlupFgAfAAwr573q01y6k";
+    static JSON = "https://nwapi.nhk.jp/nhkworld/epg/v7b/world/now.json";
     static HOST = "https://www3.nhk.or.jp";
     static WHITESPACE = /[\n\t\s]+/g;
     static HEADERS = {
