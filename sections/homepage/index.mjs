@@ -52,6 +52,11 @@ function br() {
 function a(...args) {
     return new_tag('a', ...args);
 }
+function set_attribute(q, a_name, val) {
+    const nodes = Array.from(document.querySelectorAll(q));
+    for (const n of nodes)n.setAttribute(a_name, val);
+    return nodes;
+}
 function new_tag(tag_name, ...args) {
     let e = document.createElement(tag_name);
     for (const x of args){
@@ -281,11 +286,115 @@ const NHK_DOM = {
         }
     }
 };
+let MAIN_DIV2 = '#quarry';
+const IN_HOUSE = {};
+let CURRENT_HOUSE = {};
+const OUT_HOUSE = {};
+function date() {
+    return new Date().toLocaleString();
+}
+function first_seen(c) {
+    delete OUT_HOUSE[c.ip];
+    if (!(c.ip in IN_HOUSE)) {
+        IN_HOUSE[c.ip] = {
+            date: date(),
+            client: c
+        };
+    }
+    return IN_HOUSE[c.ip].date;
+}
+function now_gone(c) {
+    delete IN_HOUSE[c.ip];
+    const now = date();
+    OUT_HOUSE[c.ip] = {
+        date: now,
+        client: c
+    };
+    console.log(`Left: ${c.nickname} (${c.ip}) @ ${now}`);
+    return OUT_HOUSE[c.ip].date;
+}
+function title(ip) {
+    if (ip in IN_HOUSE) return `entered: ${IN_HOUSE[ip].date}`;
+    return 'unknown';
+}
+function loop_ms() {
+    const x = new Date();
+    const hours = x.getHours();
+    if (hours > 12 + 1) return next_loop_ms(1);
+    if (hours > 3 && hours < 10) return next_loop_ms(5);
+    if (hours > 0 && hours < 4) return next_loop_ms(10);
+    return next_loop_ms(5);
+}
+const Quarry_DOM = {
+    initialize (main = '#quarry') {
+        MAIN_DIV2 = main;
+        Quarry_DOM.fetch();
+    },
+    focus () {
+        return Quarry_DOM.fetch();
+    },
+    update: {
+        clients: function(clients) {
+            const f = document.createDocumentFragment();
+            CURRENT_HOUSE = clients.reduce((p, c)=>{
+                p[c.ip] = {
+                    date: date(),
+                    client: c
+                };
+                return p;
+            }, {});
+            for (const [in_ip, mov] of Object.entries(IN_HOUSE)){
+                if (!(in_ip in CURRENT_HOUSE)) now_gone(mov.client);
+            }
+            for (const client of clients){
+                first_seen(client);
+                if (client.ignored) {
+                    continue;
+                }
+                const nickname = client.nickname === "Unknown" ? `${client.hostname}/${client.ip}` : client.nickname;
+                f.appendChild(div('.client', {
+                    'title': title(client.ip)
+                }, nickname));
+            }
+            empty(MAIN_DIV2);
+            append_child(MAIN_DIV2, f);
+            set_attribute(MAIN_DIV2, 'title', `updated: ${date()}`);
+            return true;
+        }
+    },
+    async fetch () {
+        if (document.hidden || is_loading(MAIN_DIV2)) return false;
+        loading(MAIN_DIV2);
+        return fetch("https://www.miniuni.com/quarry/clients").then((resp)=>{
+            not_loading(MAIN_DIV2);
+            setTimeout(Quarry_DOM.fetch, loop_ms());
+            if (resp.status !== 200) {
+                console.log(`ERROR: ${resp.status}`);
+                throw new Error(`Failed to get quarry clients: ${resp.status}`);
+            }
+            return resp.json();
+        }).then((x)=>{
+            if (typeof x === 'object' && x.error === false) {
+                Quarry_DOM.update.clients(x.data);
+            } else {
+                console.log("Error in getting quarry info: ");
+                console.log(x);
+            }
+        }).catch((x)=>{
+            not_loading(MAIN_DIV2);
+            empty(MAIN_DIV2);
+            setTimeout(Quarry_DOM.fetch, 10000);
+            console.log(x);
+        });
+    }
+};
+Quarry_DOM.initialize('#quarry');
 Shout_Cast_DOM.initialize('#shout_cast');
 NHK_DOM.initialize('#nhk');
 function update_page() {
     if (!document.hidden) {
         NHK_DOM.focus();
+        Quarry_DOM.focus();
         Shout_Cast_DOM.focus();
     }
 }

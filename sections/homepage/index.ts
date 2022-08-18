@@ -7,7 +7,7 @@
 
 import { Shout_Cast_DOM } from "./Shout_Cast.ts";
 import { NHK_DOM } from "./NHK.ts";
-// import { Quarry_DOM } from "./Quarry.ts";
+import { Quarry_DOM } from "./Quarry.ts";
 
 import {
   not_loading, loading,
@@ -17,14 +17,16 @@ import {
 
 
 
-// Quarry_DOM.initialize('#quarry');
+Quarry_DOM.initialize('#quarry');
+
 Shout_Cast_DOM.initialize('#shout_cast');
+
 NHK_DOM.initialize('#nhk');
 
 function update_page() {
   if (!document.hidden) {
     NHK_DOM.focus();
-    // Quarry_DOM.focus();
+    Quarry_DOM.focus();
     Shout_Cast_DOM.focus();
   }
 }
