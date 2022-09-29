@@ -1,4 +1,6 @@
 
+
+
 var last_secs = 100;
 
 function update_page() {
@@ -67,8 +69,16 @@ function human_number(x) {
 function show_fullscreen() {
   let elem = document.documentElement;
 
-  elem.requestFullscreen({ navigationUI: "show" }).then(() => {}).catch((err) => {
+  elem.requestFullscreen({ navigationUI: "show" }).catch((err) => {
     alert(`An error occurred while trying to switch into fullscreen mode: ${err.message} (${err.name})`);
   });
 }
 
+function fullscreen_change (ev) {
+  if (document.fullscreenElement) {
+    document.body.classList.add("fullscreen");
+  } else {
+    document.body.classList.remove("fullscreen");
+  }
+}
+document.addEventListener('fullscreenchange', fullscreen_change);
