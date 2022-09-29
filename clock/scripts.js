@@ -64,3 +64,11 @@ function human_number(x) {
 }
 
 
+function show_fullscreen() {
+  let elem = document.documentElement;
+
+  elem.requestFullscreen({ navigationUI: "show" }).then(() => {}).catch((err) => {
+    alert(`An error occurred while trying to switch into fullscreen mode: ${err.message} (${err.name})`);
+  });
+}
+
