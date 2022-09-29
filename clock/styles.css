@@ -12,7 +12,7 @@ body {
   font-family: monospace;
   font-size: 5em;
   font-weight: bold;
-  font-size: 16vw;
+  font-size: 27vw;
   text-align: center;
 }
 
@@ -23,7 +23,7 @@ body {
   gap: 0.5em; */
   font-family: sans-serif;
   font-weight: bold;
-  font-size: 9vw;
+  font-size: 12vw;
   text-align: center;
   border: 1px dashed red;
 }
@@ -32,8 +32,7 @@ body {
   border: 1px dashed blue;
 }
 
-
-#second {
+#seconds {
   font-weight: normal;
   font-size: 80%;
   color: #ccc;
