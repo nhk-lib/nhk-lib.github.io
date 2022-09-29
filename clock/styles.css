@@ -1,0 +1,44 @@
+
+body {
+  background: #000;
+}
+
+
+#clock {
+  color: #D67702;
+  /* display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5em; */
+  font-family: monospace;
+  font-size: 5em;
+  font-weight: bold;
+  font-size: 16vw;
+  text-align: center;
+}
+
+#date {
+  color: #ccc;
+  /* display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5em; */
+  font-family: sans-serif;
+  font-weight: bold;
+  font-size: 9vw;
+  text-align: center;
+  border: 1px dashed red;
+}
+
+.unit {
+  border: 1px dashed blue;
+}
+
+
+#second {
+  font-weight: normal;
+  font-size: 80%;
+  color: #ccc;
+}
+
+#month, #day, #year {
+  color: #5FADFF;
+}
