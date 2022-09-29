@@ -1,35 +1,39 @@
 
 body {
+  padding-top: 5%;
   background: #000;
 }
 
 
 #clock {
   color: #D67702;
-  /* display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.5em; */
   font-family: monospace;
   font-size: 5em;
   font-weight: bold;
-  font-size: 27vw;
+  font-size: 24vw;
   text-align: center;
+  /* border: 1px dashed green; */
+  line-height: 1;
 }
 
 #date {
   color: #ccc;
-  /* display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.5em; */
   font-family: sans-serif;
   font-weight: bold;
   font-size: 12vw;
   text-align: center;
-  border: 1px dashed red;
+  /* border: 1px dashed red; */
+  line-height: 1;
 }
 
-.unit {
+/* .unit {
   border: 1px dashed blue;
+} */
+
+#hour::after, #minute::after {
+  content: ':';
+  color: #ccc;
+  font-size: 50%;
 }
 
 #seconds {
@@ -39,5 +43,16 @@ body {
 }
 
 #month, #day, #year {
-  color: #5FADFF;
+  color: #4098F5;
 }
+
+#dayname {
+  padding-right: 0.25em;
+}
+
+#month::after, #day::after {
+  content: '/';
+  color: #ccc;
+  font-size: 50%;
+}
+

@@ -1,6 +1,18 @@
 
+var last_secs = 100;
+
 function update_page() {
   const now        = new Date();
+
+  const seconds = now.getSeconds();
+  document.getElementById("seconds").innerText = human_number(seconds);
+
+  if (last_secs < seconds) {
+    last_secs = seconds;
+    return;
+  }
+
+  last_secs = seconds;
 
   const hour       = now.getHours();
   const human_hour = hour % 12;
@@ -8,9 +20,6 @@ function update_page() {
 
   const minute       = now.getMinutes();
   document.getElementById("minute").innerText = human_number(minute);
-
-  const seconds = now.getSeconds();
-  document.getElementById("seconds").innerText = human_number(seconds);
 
   document.getElementById("day").innerText = human_number(now.getDate());
   document.getElementById("month").innerText = human_number(now.getMonth() + 1);
