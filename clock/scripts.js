@@ -74,11 +74,34 @@ function show_fullscreen() {
   });
 }
 
-function fullscreen_change (ev) {
+var wakeLock = null;
+
+async function fullscreen_change (ev) {
   if (document.fullscreenElement) {
     document.body.classList.add("fullscreen");
-  } else {
-    document.body.classList.remove("fullscreen");
+    if ('wakeLock' in navigator) {
+      try {
+        wakeLock = await navigator.wakeLock.request('screen');
+        document.body.classList.add('wakelock_active');
+      } catch (err) {
+        document.body.classList.remove('wakelock_active');
+      }
+    }
+    return;
   }
-}
+
+  document.body.classList.remove("fullscreen");
+  if (wakeLock) {
+    wakeLock.release().then(() => {
+      document.body.classList.remove('wakelock_active');
+      wakeLock = null;
+    });
+  }
+} // function fullscreen_change
+
 document.addEventListener('fullscreenchange', fullscreen_change);
+
+
+if ('wakeLock' in navigator) {
+  document.body.classList.add("wakelock");
+}
