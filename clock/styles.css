@@ -20,7 +20,7 @@ body.fullscreen {
   font-family: monospace;
   font-size: 5em;
   font-weight: bold;
-  font-size: 24vw;
+  font-size: 25vw;
   text-align: center;
   /* border: 1px dashed green; */
   line-height: 1;
@@ -46,7 +46,7 @@ body.fullscreen {
   font-size: 50%;
 }
 
-#hour::after, #minute::after {
+#hour::after {
   content: ':';
   color: #ccc;
   font-size: 50%;

@@ -9,6 +9,11 @@ case "$*" in
     deployctl run --libs="" --watch ./deno_deploy/deploy.js
     ;;
 
+  "html")
+    set -x
+    da.ts file server start 3456 "./render.ts"
+    ;;
+
   *)
     echo "!!! Unknown commands: $0 $*" >&2
     exit 2
