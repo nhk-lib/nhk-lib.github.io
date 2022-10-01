@@ -11,7 +11,7 @@ body {
 }
 
 body.fullscreen {
-  padding: 10% 0 0 0;
+  padding: 8% 0 0 0;
 }
 
 
@@ -20,7 +20,7 @@ body.fullscreen {
   font-family: monospace;
   font-size: 5em;
   font-weight: bold;
-  font-size: 25vw;
+  font-size: 26vw;
   text-align: center;
   /* border: 1px dashed green; */
   line-height: 1;
