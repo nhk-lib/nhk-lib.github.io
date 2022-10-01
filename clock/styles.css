@@ -30,7 +30,7 @@ body.fullscreen {
   color: #ccc;
   font-family: sans-serif;
   font-weight: bold;
-  font-size: 13vw;
+  font-size: 15vw;
   text-align: center;
   /* border: 1px dashed red; */
   line-height: 1;
@@ -40,12 +40,22 @@ body.fullscreen {
   border: 1px dashed blue;
 } */
 
-#hour::after, #minute::after {
-  content: ':';
+#dayname::after {
+  content: '.';
   color: #ccc;
   font-size: 50%;
 }
 
+#hour::after, #minute::after {
+  content: ':';
+  color: #ccc;
+  font-size: 50%;
+  vertical-align: 45%;
+}
+
+#minute::after {
+  vertical-align: 25%;
+}
 #seconds {
   font-weight: normal;
   font-size: 80%;
@@ -64,6 +74,7 @@ body.fullscreen {
   content: '/';
   color: #ccc;
   font-size: 50%;
+  vertical-align: 40%;
 }
 
 #enter_fullscreen {

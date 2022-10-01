@@ -16,12 +16,10 @@ function update_page() {
 
   last_secs = seconds;
 
-  const hour       = now.getHours();
-  const human_hour = hour % 12;
-  document.getElementById("hour").innerText = human_number(human_hour);
+  const human_hour = now.getHours() % 12;
+  document.getElementById("hour").innerText = human_number((human_hour === 0) ? 12 : human_hour);
 
-  const minute       = now.getMinutes();
-  document.getElementById("minute").innerText = human_number(minute);
+  document.getElementById("minute").innerText = human_number(now.getMinutes());
 
   document.getElementById("day").innerText = human_number(now.getDate());
   document.getElementById("month").innerText = human_number(now.getMonth() + 1);
