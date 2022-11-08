@@ -67,7 +67,7 @@ function human_number(x) {
 function show_fullscreen() {
   let elem = document.documentElement;
 
-  elem.requestFullscreen({ navigationUI: "show" }).catch((err) => {
+  elem.requestFullscreen({ navigationUI: "hide" }).catch((err) => {
     alert(`An error occurred while trying to switch into fullscreen mode: ${err.message} (${err.name})`);
   });
 }
