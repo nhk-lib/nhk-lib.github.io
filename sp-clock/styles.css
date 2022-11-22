@@ -8,6 +8,7 @@ body {
   padding-top: 2%;
   background: #000;
   vertical-align: middle;
+  line-height: 1;
 }
 
 body.fullscreen {
@@ -34,7 +35,7 @@ body.fullscreen #enter_fullscreen {
   font-size: 35vw;
   text-align: center;
   /* border: 1px dashed green; */
-  line-height: 1;
+  line-height: 70%;
 }
 
 #date {
@@ -44,7 +45,7 @@ body.fullscreen #enter_fullscreen {
   
   text-align: center;
   /* border: 1px dashed red; */
-  line-height: 1;
+  
 }
 
 /* .unit {
@@ -72,13 +73,13 @@ body.fullscreen #enter_fullscreen {
 #dayname {
   color: rgb(173, 102, 44);
   font-size: 25vw;
-  line-height: 30%;
+  
 }
 
  
 #date_words  {
   font-size: 14vw;
-  line-height: 90%;
+ 
   color: rgb(143, 143, 143);
 }
 
