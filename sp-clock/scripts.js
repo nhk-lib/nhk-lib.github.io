@@ -22,7 +22,7 @@ function update_page() {
   document.getElementById("minute").innerText = human_number(now.getMinutes());
 
   
-  document.getElementById("date_words").innerText = now.toLocaleString('es-us', { dateStyle: 'long' });
+  document.getElementById("date_words").innerText = now.toLocaleString('es-us', { dateStyle: 'medium' });
 
   // document.getElementById("year").innerText = human_number(now.getYear() - 100);
   
