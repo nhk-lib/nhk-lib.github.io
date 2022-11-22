@@ -41,7 +41,7 @@ body.fullscreen #enter_fullscreen {
   color: #ccc;
   font-family: sans-serif;
   font-weight: bold;
-
+  
   text-align: center;
   /* border: 1px dashed red; */
   line-height: 1;
@@ -71,13 +71,13 @@ body.fullscreen #enter_fullscreen {
 
 #dayname {
   color: rgb(173, 102, 44);
-  font-size: 19vw;
-  line-height: 20%;
+  font-size: 25vw;
+  line-height: 30%;
 }
 
  
 #date_words  {
-  font-size: 10vw;
+  font-size: 14vw;
   line-height: 90%;
   color: rgb(143, 143, 143);
 }
