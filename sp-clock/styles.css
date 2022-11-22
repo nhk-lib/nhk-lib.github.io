@@ -27,7 +27,7 @@ body.fullscreen #enter_fullscreen {
 }
 
 #clock {
-  color: #c4c4c4;
+  color: #bbb8b8;
   font-family: monospace;
   font-size: 5em;
   font-weight: bold;
@@ -41,7 +41,7 @@ body.fullscreen #enter_fullscreen {
   color: #ccc;
   font-family: sans-serif;
   font-weight: bold;
-  font-size: 14vw;
+
   text-align: center;
   /* border: 1px dashed red; */
   line-height: 1;
@@ -69,18 +69,19 @@ body.fullscreen #enter_fullscreen {
   color: #ccc;
 }
 
-#date_words, #day, #year {
-  color: #747373;
+#dayname {
+  color: rgb(173, 102, 44);
+  font-size: 19vw;
+  line-height: 20%;
 }
-
-#dayname::after {
-  content: '.';
-  color: #ccc;
-  font-size: 50%;
-}
-
 
  
+#date_words  {
+  font-size: 10vw;
+  line-height: 90%;
+  color: rgb(143, 143, 143);
+}
+
 
 #enter_fullscreen {
   color: #ccc;
