@@ -1,0 +1,11 @@
+{
+  "deploy": {
+    "project": "facbe952-9a3c-493d-b8e7-c37e2a043a7c",
+    "exclude": [
+      "node_modules",
+      "**/node_modules"
+    ],
+    "include": [],
+    "entrypoint": "https://github.com/nhk-lib/nhk-lib.github.io/raw/main/deno_deploy/deploy.js"
+  }
+}

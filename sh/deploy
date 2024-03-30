@@ -10,4 +10,4 @@ secrets DENO_DEPLOY deployctl deploy \
   --project=da99shoutcast \
   --exclude=node_modules  \
   --no-static \
-  "https://github.com/nhk-lib/nhk-lib.github.io/raw/main/deno_deploy/deploy.js"
+  --entrypoint="https://github.com/nhk-lib/nhk-lib.github.io/raw/main/deno_deploy/deploy.js"
