@@ -10,11 +10,16 @@ export interface ShoutCast_Station {
 
 export class ShoutCast {
   static URLS = {
+    channel_99:    "http://155.138.139.156:8099/",
+    channel_99_half: "http://155.138.139.156:8199/",
+    channel_99_classic: "http://155.138.139.156:8060/",
+    channel_99_hd: "http://155.138.139.156:9999/",
+    channel_2501:  "http://155.138.139.156:2501/",
     channel_101:   "http://155.138.139.156:8101/",
     channel_101_b: "http://155.138.139.156:9101/",
-    channel_99:    "http://155.138.139.156:8099/",
-    channel_99_hd: "http://155.138.139.156:9999/",
-    channel_99_b:  "http://155.138.139.156:8199/",
+    channel_101_dropout: "http://155.138.139.156:2007/",
+    channel_19_5:  "http://155.138.139.156:9150/",
+    channel_42:    "http://155.138.139.156:8042/",
     jpopsuki:      "http://65.21.170.149:8000/"
   };
 

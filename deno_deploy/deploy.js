@@ -4,11 +4,16 @@
 
 class ShoutCast {
     static URLS = {
+        channel_99: "http://155.138.139.156:8099/",
+        channel_99_half: "http://155.138.139.156:8199/",
+        channel_99_classic: "http://155.138.139.156:8060/",
+        channel_99_hd: "http://155.138.139.156:9999/",
+        channel_2501: "http://155.138.139.156:2501/",
         channel_101: "http://155.138.139.156:8101/",
         channel_101_b: "http://155.138.139.156:9101/",
-        channel_99: "http://155.138.139.156:8099/",
-        channel_99_hd: "http://155.138.139.156:9999/",
-        channel_99_b: "http://155.138.139.156:8199/",
+        channel_101_dropout: "http://155.138.139.156:2007/",
+        channel_19_5: "http://155.138.139.156:9150/",
+        channel_42: "http://155.138.139.156:8042/",
         jpopsuki: "http://65.21.170.149:8000/"
     };
     static request_options = {
@@ -81,10 +86,7 @@ class ShoutCast {
         const filenames = Object.keys(ShoutCast.URLS);
         const fetches = filenames.map((f)=>{
             const url = ShoutCast.URLS[f];
-            return fetch(url, ShoutCast.request_options).then((resp)=>resp.text()
-            ).then((txt)=>ShoutCast.parse(f, url, txt)
-            ).catch((err)=>ShoutCast.error(err, f, url)
-            );
+            return fetch(url, ShoutCast.request_options).then((resp)=>resp.text()).then((txt)=>ShoutCast.parse(f, url, txt)).catch((err)=>ShoutCast.error(err, f, url));
         });
         return Promise.all(fetches);
     }
@@ -112,8 +114,8 @@ class NHK {
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
         "Accept-Language": "en-US,en;q=0.9,en-GB;q=0.8"
     };
-    static string_join(x1, j) {
-        return x1.filter((x)=>{
+    static string_join(x, j) {
+        return x.filter((x)=>{
             return x.length > 0;
         }).join(j).replace(NHK.WHITESPACE, " ").trim();
     }
@@ -125,8 +127,7 @@ class NHK {
             return [];
         }
         const json = await resp.json();
-        return json.channel.item.map((x)=>NHK.item_to_json(x)
-        );
+        return json.channel.item.map((x)=>NHK.item_to_json(x));
     }
     static item_to_json(x) {
         return {
@@ -148,8 +149,7 @@ class NHK {
     }
     static cache_seconds(shows) {
         const now = Date.now();
-        const next_show = shows.find((x)=>x.ends_at > now
-        );
+        const next_show = shows.find((x)=>x.ends_at > now);
         if (next_show) {
             return Math.ceil((next_show.ends_at - now) / 1000) + 1;
         }
@@ -212,7 +212,7 @@ async function get_file(event, path) {
     });
 }
 addEventListener("fetch", (event)=>{
-    const { pathname  } = new URL(event.request.url);
+    const { pathname } = new URL(event.request.url);
     switch(pathname){
         case "/":
             event.respondWith(new Response("not ready", {

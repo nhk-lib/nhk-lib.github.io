@@ -249,13 +249,13 @@ const NHK_DOM = {
             if (!(typeof x === 'object' && 'shows' in x)) throw new Error(`Unknown value for NHK JSON response: ${x}`);
             for (const show of x.shows)NHK_DOM.create.show(show);
             if (x.shows.length === 0) throw new Error("No shows retrieved.");
-            const show1 = x.shows[0];
+            const show = x.shows[0];
             const date_now = Date.now();
-            if (show1.ends_at < date_now) {
+            if (show.ends_at < date_now) {
                 setTimeout(NHK_DOM.fetch, 5000);
                 return;
             }
-            const next_time = Math.floor(show1.ends_at - date_now);
+            const next_time = Math.floor(show.ends_at - date_now);
             setTimeout(NHK_DOM.fetch, next_time + 1000);
         }).catch((x)=>{
             not_loading(MAIN_DIV1);
@@ -264,25 +264,24 @@ const NHK_DOM = {
         });
     },
     create: {
-        show (x1) {
-            const id = NHK_DOM.id(x1);
+        show (x) {
+            const id = NHK_DOM.id(x);
             const old_e = document.getElementById(id);
-            if (old_e || x1.ends_at <= Date.now()) return false;
-            const preview_img = x1.title != "NHK NEWSLINE" && x1.thumbnail_small ? fragment(br(), img(`preview of ${x1.title}`, x1.thumbnail_small)) : '';
+            if (old_e || x.ends_at <= Date.now()) return false;
+            const preview_img = x.title != "NHK NEWSLINE" && x.thumbnail_small ? fragment(br(), img(`preview of ${x.title}`, x.thumbnail_small)) : '';
             const new_e = div(`#${id}.nhk_show`);
-            if (x1.link) {
+            if (x.link) {
                 new_e.appendChild(div(".title", a({
-                    href: x1.link
-                }, x1.title, preview_img)));
+                    href: x.link
+                }, x.title, preview_img)));
             } else {
-                new_e.appendChild(div(".title", x1.title, preview_img));
+                new_e.appendChild(div(".title", x.title, preview_img));
             }
-            new_e.appendChild(div(".description", x1.description));
+            new_e.appendChild(div(".description", x.description));
             append_child(MAIN_DIV1, new_e);
             setTimeout(()=>{
-                document.querySelectorAll(`#${id}`).forEach((x)=>x.remove()
-                );
-            }, x1.ends_at - Date.now());
+                document.querySelectorAll(`#${id}`).forEach((x)=>x.remove());
+            }, x.ends_at - Date.now());
         }
     }
 };
