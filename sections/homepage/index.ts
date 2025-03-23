@@ -7,7 +7,7 @@
 
 import { Shout_Cast_DOM } from "./Shout_Cast.ts";
 import { NHK_DOM } from "./NHK.ts";
-import { Quarry_DOM } from "./Quarry.ts";
+// import { Quarry_DOM } from "./Quarry.ts";
 
 import {
   not_loading, loading,
@@ -17,7 +17,7 @@ import {
 
 
 
-Quarry_DOM.initialize('#quarry');
+// Quarry_DOM.initialize('#quarry');
 
 Shout_Cast_DOM.initialize('#shout_cast');
 
