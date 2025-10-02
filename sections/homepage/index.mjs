@@ -1,10 +1,10 @@
 // src/DOM.ts
 var ATTR_STRING = /^[\#\.]{1}[\.\#a-z\_\-0-9]+$/;
 function next_loop_ms(mins) {
-  const dt = /* @__PURE__ */ new Date();
+  const dt = new Date;
   const now = dt.getTime();
   const secs = (mins - dt.getMinutes() % mins) * 60 - dt.getSeconds() + 1;
-  return secs * 1e3;
+  return secs * 1000;
 }
 function fragment(...args) {
   const f = document.createDocumentFragment();
@@ -113,7 +113,6 @@ function split_attributes(str) {
     if (id)
       new_attr["id"] = id.trim();
   }
-  ;
   let classes_str = classes.join(" ").trim();
   if (classes_str.length > 0) {
     new_attr["class"] = classes_str;
@@ -183,27 +182,17 @@ var Shout_Cast_DOM = {
       const id = Shout_Cast_DOM.id(x);
       if (document.getElementById(id))
         return false;
-      return append_child(
-        MAIN_DIV,
-        fragment(
-          div(`#${Shout_Cast_DOM.id(x)}.station`, [
-            div(".title", a({ href: x.stream_url }, x.title)),
-            div(".current_title", x.current_title)
-          ])
-        )
-      );
+      return append_child(MAIN_DIV, fragment(div(`#${Shout_Cast_DOM.id(x)}.station`, [
+        div(".title", a({ href: x.stream_url }, x.title)),
+        div(".current_title", x.current_title)
+      ])));
     }
   },
-  // create
   update: {
     station(x) {
-      return Shout_Cast_DOM.create.station(x) || inner_text(
-        `#${Shout_Cast_DOM.id(x)} div.current_title`,
-        x.current_title
-      );
+      return Shout_Cast_DOM.create.station(x) || inner_text(`#${Shout_Cast_DOM.id(x)} div.current_title`, x.current_title);
     }
   },
-  // update
   async fetch() {
     if (document.hidden || is_loading(MAIN_DIV))
       return false;
@@ -229,12 +218,10 @@ var Shout_Cast_DOM = {
       console.log(x);
     });
   },
-  // fetch
   initialize: function(str = "#shout_cast") {
     MAIN_DIV = str;
     return Shout_Cast_DOM.fetch();
   }
-  // initialize
 };
 
 // sections/homepage/NHK.ts
@@ -263,7 +250,7 @@ var NHK_DOM = {
         throw new Error("NHK Failed");
       }
     }).then((x) => {
-      if (!(typeof x === "object" && "shows" in x))
+      if (!(typeof x === "object" && ("shows" in x)))
         throw new Error(`Unknown value for NHK JSON response: ${x}`);
       for (const show2 of x.shows)
         NHK_DOM.create.show(show2);
@@ -272,18 +259,17 @@ var NHK_DOM = {
       const show = x.shows[0];
       const date_now = Date.now();
       if (show.ends_at < date_now) {
-        setTimeout(NHK_DOM.fetch, 5e3);
+        setTimeout(NHK_DOM.fetch, 5000);
         return;
       }
       const next_time = Math.floor(show.ends_at - date_now);
-      setTimeout(NHK_DOM.fetch, next_time + 1e3);
+      setTimeout(NHK_DOM.fetch, next_time + 1000);
     }).catch((x) => {
       not_loading(MAIN_DIV2);
       console.log(x);
       setTimeout(NHK_DOM.fetch, 1e4);
     });
   },
-  // loop
   create: {
     show(x) {
       const id = NHK_DOM.id(x);
@@ -293,24 +279,17 @@ var NHK_DOM = {
       const preview_img = x.title != "NHK NEWSLINE" && x.thumbnail_small ? fragment(br(), img(`preview of ${x.title}`, x.thumbnail_small)) : "";
       const new_e = div(`#${id}.nhk_show`);
       if (x.link) {
-        new_e.appendChild(
-          div(".title", a({ href: x.link }, x.title, preview_img))
-        );
+        new_e.appendChild(div(".title", a({ href: x.link }, x.title, preview_img)));
       } else {
         new_e.appendChild(div(".title", x.title, preview_img));
       }
       new_e.appendChild(div(".description", x.description));
       append_child(MAIN_DIV2, new_e);
-      setTimeout(
-        () => {
-          document.querySelectorAll(`#${id}`).forEach((x2) => x2.remove());
-        },
-        x.ends_at - Date.now()
-      );
+      setTimeout(() => {
+        document.querySelectorAll(`#${id}`).forEach((x2) => x2.remove());
+      }, x.ends_at - Date.now());
     }
-    // on
   }
-  // create
 };
 
 // sections/homepage/index.ts

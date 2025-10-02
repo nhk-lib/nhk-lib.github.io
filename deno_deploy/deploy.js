@@ -103,7 +103,10 @@ class ShoutCast {
 
 // deno_deploy/NHK.ts
 class NHK {
-  static JSON = "https://nwapi.nhk.jp/nhkworld/epg/v7b/world/now.json";
+  static get JSON() {
+    const d = new Date;
+    return `https://masterpl.hls.nhkworld.jp/epg/w/${d.getFullYear()}${(d.getMonth() + 1).padStart(2, "0")}${(d.getDay() + 1).padStart(2, "0")}.json`;
+  }
   static HOST = "https://www3.nhk.or.jp";
   static WHITESPACE = /[\n\t\s]+/g;
   static HEADERS = {
@@ -158,6 +161,7 @@ class NHK {
 }
 
 // deno_deploy/main.ts
+var GIT_REPO = "https://raw.githubusercontent.com/da99/diegoalban/master/Public";
 async function get_file(event, path) {
   const origin = new URL(event.request.url);
   const old_headers = event.request.headers;
@@ -191,7 +195,6 @@ async function get_file(event, path) {
   }
   return new Response(result.body, { ...result, headers });
 }
-var GIT_REPO = "https://raw.githubusercontent.com/da99/diegoalban/master/Public";
 addEventListener("fetch", (event) => {
   const { pathname } = new URL(event.request.url);
   switch (pathname) {
