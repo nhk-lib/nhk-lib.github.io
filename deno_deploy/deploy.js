@@ -125,7 +125,7 @@ class NHK {
       return [];
     }
     const json = await resp.json();
-    return json.channel.item.map((x) => NHK.item_to_json(x));
+    return json.data.map((x) => NHK.item_to_json(x));
   }
   static item_to_json(x) {
     return {

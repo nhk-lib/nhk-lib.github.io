@@ -59,7 +59,7 @@ export class NHK {
       return [];
     }
     const json = await resp.json();
-    return json.channel.item.map((x : NHK_JSON_ITEM) => NHK.item_to_json(x));
+    return json.data.map((x : NHK_JSON_ITEM) => NHK.item_to_json(x));
   } // method
 
   static item_to_json(x : NHK_JSON_ITEM) : NHK_SHOW {
