@@ -41,7 +41,7 @@ export class NHK {
   // static JSON       = "https://nwapi.nhk.jp/nhkworld/epg/v7b/world/now.json"
   static get JSON() {
     const d = new Date();
-    return `https://masterpl.hls.nhkworld.jp/epg/w/${d.getFullYear()}${(d.getMonth() + 1).padStart(2, '0')}${(d.getDay() + 1).padStart(2, '0')}.json`
+    return `https://masterpl.hls.nhkworld.jp/epg/w/${d.getFullYear()}${(d.getMonth() + 1).toString().padStart(2, '0')}${(d.getDay() + 1).toString().padStart(2, '0')}.json`
   }
   static HOST       = "https://www3.nhk.or.jp";
   static WHITESPACE = /[\n\t\s]+/g;
