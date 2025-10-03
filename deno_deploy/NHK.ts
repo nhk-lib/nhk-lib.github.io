@@ -4,25 +4,12 @@ interface NHK_JSON_ITEM {
   seriesId:      string,
   airingId:      string,
   title:         string,
+  episodeTitle:  string,
   description:   string,
   link?:          string,
-  pubDate:       string,
-  jstrm:         string,
-  wstrm:         string,
-  vodReserved:   boolean,
-  endDate:       string,
-  subtitle:      string,
-  content:       string,
-  content_clean: string,
-  pgm_gr_id:     string,
   thumbnail:     string,
-  thumbnail_s:   string,
-  showlist:      string,
-  internal:      string,
-  genre:         object,
-  vod_id:        string,
-  vod_url:       string,
-  analytics:     string
+  pubDate:       string,
+  endDate:       string,
 } // interface
 
 export interface NHK_SHOW {
@@ -65,13 +52,13 @@ export class NHK {
   static item_to_json(x : NHK_JSON_ITEM) : NHK_SHOW {
     return {
       airingId:     x.airingId,
-      title:        NHK.string_join([x.title, x.subtitle], ": "),
-      description:  NHK.string_join([x.description, x.content_clean], " "),
+      title:        NHK.string_join([x.title, x.episodeTitle], ": "),
+      description:  x.description,
       link:         (x.link) ? `${NHK.HOST}${x.link}` : null,
-      thumbnail:         (x.thumbnail) ? `${NHK.HOST}${x.thumbnail}` : null,
-      thumbnail_small:   (x.thumbnail_s) ? `${NHK.HOST}${x.thumbnail_s}` : null,
-      published_at: parseInt(x.pubDate),
-      ends_at:      parseInt(x.endDate),
+      thumbnail:    (x.thumbnail == '') ?  null : x.thumbnail,
+      thumbnail_small: (x.thumbnail == '') ? null : x.thumbnail,
+      published_at: (new Date(x.startTime)).getTime(),
+      ends_at:      (new Date(x.endTime)).getTime(),
     }; // return
   } // static
 

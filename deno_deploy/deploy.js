@@ -130,13 +130,13 @@ class NHK {
   static item_to_json(x) {
     return {
       airingId: x.airingId,
-      title: NHK.string_join([x.title, x.subtitle], ": "),
-      description: NHK.string_join([x.description, x.content_clean], " "),
+      title: NHK.string_join([x.title, x.episodeTitle], ": "),
+      description: x.description,
       link: x.link ? `${NHK.HOST}${x.link}` : null,
-      thumbnail: x.thumbnail ? `${NHK.HOST}${x.thumbnail}` : null,
-      thumbnail_small: x.thumbnail_s ? `${NHK.HOST}${x.thumbnail_s}` : null,
-      published_at: parseInt(x.pubDate),
-      ends_at: parseInt(x.endDate)
+      thumbnail: x.thumbnail == "" ? null : x.thumbnail,
+      thumbnail_small: x.thumbnail == "" ? null : x.thumbnail,
+      published_at: new Date(x.startTime).getTime(),
+      ends_at: new Date(x.endTime).getTime()
     };
   }
   static cache_seconds(shows) {
